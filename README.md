@@ -3,10 +3,10 @@
 
 ### 1-Demo Video
 EuRoC benchmark test:
-https://youtu.be/5MypXkwQwFk
+[![](http://img.youtube.com/vi/5MypXkwQwFk/0.jpg)](http://www.youtube.com/watch?v=5MypXkwQwFk "SOPVO EuRoC benchmark test")
 
 T265+drone on board test:
-https://youtu.be/Yr2lf6Kxt3U
+[![](http://img.youtube.com/vi/Yr2lf6Kxt3U/0.jpg)](http://www.youtube.com/watch?v=Yr2lf6Kxt3U "SOPVO T265+drone on board test")
 
 ### 2-Relevent Publication:
 TBD
