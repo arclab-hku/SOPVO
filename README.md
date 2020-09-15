@@ -60,4 +60,5 @@ please wait for update
 
 ### Maintainer:
 Ran Duan, ArcLab at PolyU, HK, China
+ran-sn.duan@connect.polyu.hk
 rduan036@gmail.com
