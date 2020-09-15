@@ -1,9 +1,12 @@
 #  sopvo
 ## 
-https://youtu.be/5MypXkwQwFk
 
 ### 1-Demo Video
-TBD
+EuRoC:
+https://youtu.be/5MypXkwQwFk
+
+T265 live:
+
 ### 2-Relevent Publication:
 TBD
 ### 3-Support Hardware/Dataset:
