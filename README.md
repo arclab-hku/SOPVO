@@ -10,7 +10,7 @@ https://youtu.be/Yr2lf6Kxt3U
 
 ### 2-Relevent Publication:
 TBD
-### 3-Support Hardware/Dataset:
+### 3-Support Camera/Dataset:
 EuRoC MAV Dataset, Intel Realsense T265, KITTI(ros melodic)
 ### 4-Build The Project
 We have tested in the following environment: <br />
