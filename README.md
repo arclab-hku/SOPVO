@@ -2,10 +2,10 @@
 ## 
 
 ### 1-Demo Video
-EuRoC:
+EuRoC benchmark test:
 https://youtu.be/5MypXkwQwFk
 
-T265+drone:
+T265+drone on board test:
 https://youtu.be/Yr2lf6Kxt3U
 
 ### 2-Relevent Publication:
