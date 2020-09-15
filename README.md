@@ -61,8 +61,3 @@ please wait for update
 ### Maintainer:
 Ran Duan, ArcLab at PolyU, HK, China
 rduan036@gmail.com
-
-Acknowledgement:
-This code is implemented partially based on FLVIS (https://github.com/Ttoto/FLVIS.git):
-[Shengyang Chen](https://www.polyu.edu.hk/researchgrp/cywen/index.php/en/people/researchstudent.html)(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk <br />
-Yajing Zou(Dept.LSGI,PolyU):rick.zou@connect.polyu.hk
