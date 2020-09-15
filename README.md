@@ -8,6 +8,9 @@ https://youtu.be/5MypXkwQwFk
 T265 live:
 https://youtu.be/C9UqNMNW6B8
 
+Drone on-board test (held by hand):
+https://youtu.be/kp7jyo6RLOA
+
 ### 2-Relevent Publication:
 TBD
 ### 3-Support Hardware/Dataset:
