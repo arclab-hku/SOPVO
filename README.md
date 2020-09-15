@@ -5,11 +5,8 @@
 EuRoC:
 https://youtu.be/5MypXkwQwFk
 
-T265 live:
-https://youtu.be/C9UqNMNW6B8
-
-Drone on-board test (held by hand):
-https://youtu.be/kp7jyo6RLOA
+T265+drone:
+https://youtu.be/Yr2lf6Kxt3U
 
 ### 2-Relevent Publication:
 TBD
