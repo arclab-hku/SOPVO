@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+	<machine name="local_alt" address="localhost" default="true" />
+
+	<node name="republish_left" pkg="image_transport" type="republish"  output="screen" args="raw in:=/camera/left/image_raw compressed out:=/kitti/camera/left/image"/>
+
+	<node name="republish_right" pkg="image_transport" type="republish"  output="screen" args="raw in:=/camera/right/image_raw compressed out:=/kitti/camera/right/image"/>
+
+	<node name="record" pkg="rosbag" type="record" args="/kitti/camera/left/image/compressed /kitti/camera/right/image/compressed -O /home/workspace/KITTI_to_rosbag/kitti_09_stereo_compressed.bag"/>
+
+</launch>

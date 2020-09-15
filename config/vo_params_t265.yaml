@@ -1,0 +1,47 @@
+%YAML:1.0
+#--------------------------------------------------------------------------------------------
+# VO System Parameters
+#--------------------------------------------------------------------------------------------
+sopvo.minimumKeypoint: 25 # default 20
+sopvo.maximumKeyframeShift: 1 # maximum distance between two keyframe, default 1 
+sopvo.backendEnable: 0 # loop closure, default 0 (disable), currently not available
+sopvo.BAenable: 0 # bundle adjustment, default 0 (disable), currently not available
+sopvo.addNewKeypoint: 1 # add new keypoints in each new frame (this will slowdown the process)
+sopvo.reprojectionErrorPessimistic: 3 # inliers
+sopvo.reprojectionErrorOptimistic: 5 # outliers will be rejected by orientation prior
+sopvo.depthLearningRate: 0.1 # default 0.25
+sopvo.depthDifferenceThreshold: 0.1 # default 0.01
+#--------------------------------------------------------------------------------------------
+# Feature detection Parameters
+#--------------------------------------------------------------------------------------------
+# grided detection
+feature.gridW: 4 # default 2
+feature.gridH: 4 # default 2
+feature.boundaryBoxSize: 5 # default 5
+# ORB Extractor: Number of features per image patch
+feature.nFeatures: 5 # default 50
+#--------------------------------------------------------------------------------------------
+# Orientation Prior Parameters
+#--------------------------------------------------------------------------------------------
+sopvo.sosEnableFlag: 1 # default 1 (enable)
+sopvo.sosAlphaForR: 0.01 # default 0.0001
+sopvo.sosBetaForT: 0.5 # default 0.5
+
+# t265 rect image 300*300 recalibration
+#K0_rect:
+#[169.519821, 0.000000, 151.870868,
+#0.000000, 167.917718, 132.600913,
+#0.000000, 0.000000, 1.000000]
+
+#D0_rect:
+#[-0.003884, 0.007336, -0.002283, -0.001952]
+
+#K1_rect:
+#[169.392025, 0.000000, 150.805310,
+#0.000000, 167.969904, 137.542866,
+#0.000000, 0.000000, 1.000000]
+
+#D1_rect:
+#[0.000446, 0.006281, 0.007351, -0.004575]
+
+

@@ -1,0 +1,28 @@
+%YAML:1.0
+#--------------------------------------------------------------------------------------------
+# VO System Parameters
+#--------------------------------------------------------------------------------------------
+sopvo.minimumKeypoint: 25 # default 20
+sopvo.maximumKeyframeShift: 15 # maximum distance between two keyframe, default 1 
+sopvo.backendEnable: 0 # loop closure, default 0 (disable), currently not available
+sopvo.BAenable: 0 # bundle adjustment, default 0 (disable), currently not available
+sopvo.addNewKeypoint: 0 # add new keypoints in each new frame (this will slowdown the process), default 0
+sopvo.reprojectionErrorPessimistic: 5 # inliers
+sopvo.reprojectionErrorOptimistic: 10 # outliers will be rejected by orientation prior
+sopvo.depthLearningRate: 0.2
+sopvo.depthDifferenceThreshold: 0.05 # default 0.01
+#--------------------------------------------------------------------------------------------
+# Feature detection Parameters
+#--------------------------------------------------------------------------------------------
+# grided detection
+feature.gridW: 2 # default 2
+feature.gridH: 1 # default 2
+feature.boundaryBoxSize: 5 # default 5
+# ORB Extractor: Number of features per image patch
+feature.nFeatures: 250 # default 50
+#--------------------------------------------------------------------------------------------
+# Orientation Prior Parameters
+#--------------------------------------------------------------------------------------------
+sopvo.sosEnableFlag: 1 # default 1 (enable)
+sopvo.sosAlphaForR: 0.06 # default 0.0001
+sopvo.sosBetaForT: 0.5 # default 0.5
