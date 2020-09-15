@@ -6,6 +6,7 @@ EuRoC:
 https://youtu.be/5MypXkwQwFk
 
 T265 live:
+https://youtu.be/C9UqNMNW6B8
 
 ### 2-Relevent Publication:
 TBD
