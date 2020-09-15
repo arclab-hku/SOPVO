@@ -16,7 +16,9 @@ EuRoC MAV Dataset, Intel Realsense T265, KITTI(ros melodic)
 We have tested in the following environment: <br />
 Ubuntu 16.04 + ROS Kinetic (recommend) <br />
 Ubuntu 18.04 + ROS melodic (parameters in config file need to be refined) <br />
+
 4.1 Clone the repository to the catkin work space eg. /catkin_ws/src
+
 4.2 Install sopvo:
 ````
 ./install_sopvo_XXXX.sh
