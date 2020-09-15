@@ -57,7 +57,7 @@ In folder ./config we provide two example: kitti_1226.yaml and kitti_1241.yaml.
 please wait for update
 
 ### Maintainer:
-Ran Duan, ArcLab at PolyU
+Ran Duan, ArcLab at PolyU, HK, China
 rduan036@gmail.com
 
 Acknowledgement:
