@@ -53,7 +53,7 @@ roslaunch sopvo sopvo_t265_live.launch
 5.3 KITTI:
 please download the odometry dataset(gray image), then use kitti_img2rosbag_tool to convert the sequense into rosbag.
 There are different image resolutions of the KITTI datasets, please modify the config files for the testing. 
-In folder ./config we provide two example: kitti_1226.yaml and kitti_1241.yaml. 
+In folder ./config we provide two examples: kitti_1226.yaml and kitti_1241.yaml. 
 
 5.4 Other datasets:
 please wait for update
@@ -62,3 +62,6 @@ please wait for update
 Ran Duan, ArcLab at PolyU, HK, China
 ran-sn.duan@connect.polyu.hk
 rduan036@gmail.com
+
+### Acknowledgement:
+I would like to thank Mr. Shengyang Chen(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk, this code is partly refered to his work FLVIS: https://github.com/Ttoto/FLVIS
