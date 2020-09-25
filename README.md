@@ -63,10 +63,6 @@ Please download the odometry dataset(gray image), then use kitti_img2rosbag_tool
 There are different image resolutions of the KITTI datasets, please modify the config files for the testing. 
 In folder ./config we provide two examples: kitti_1226.yaml and kitti_1241.yaml. 
 
-Test on sequence 00:
-
-[![](http://img.youtube.com/vi/kjVMMOjZx9Q/0.jpg)](http://www.youtube.com/watch?v=kjVMMOjZx9Q "")
-
 5.4 Other datasets:
 Please wait for update.
 
