@@ -2,17 +2,13 @@
 ## 
 
 ### 1-Demo Video
-EuRoC benchmark test:
 
-[![](http://img.youtube.com/vi/5MypXkwQwFk/0.jpg)](http://www.youtube.com/watch?v=5MypXkwQwFk "SOPVO EuRoC benchmark test")
-
-T265+drone on board test:
-
-[![](http://img.youtube.com/vi/Yr2lf6Kxt3U/0.jpg)](http://www.youtube.com/watch?v=Yr2lf6Kxt3U "SOPVO T265+drone on board test")
+[![](http://img.youtube.com/vi/C_R2_6NM_4M/0.jpg)](http://www.youtube.com/watch?v=C_R2_6NM_4M "")
 
 ### 2-Relevent Publication:
 
 Paper Link: TBD
+Project link: https://rduan036@bitbucket.org/arclabadmin/sopvo.git
 
 Abstruct:
 
