@@ -3,12 +3,12 @@
 
 ### 1-Demo Video
 
-[![](http://img.youtube.com/vi/IGpXWdWI2p0/0.jpg)](http://www.youtube.com/watch?v=IGpXWdWI2p0 "")
+[![](http://img.youtube.com/vi/VfmFdpIEhFM/0.jpg)](http://www.youtube.com/watch?v=VfmFdpIEhFM "")
 
 ### 2-Relevent Publication:
 
 Paper Link: TBD
-Project link: https://rduan036@bitbucket.org/arclabadmin/sopvo.git
+Project link: TBD
 
 Abstruct:
 
