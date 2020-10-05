@@ -13,14 +13,16 @@ Project link: TBD
 
 Abstruct:
 
-This paper presents a novel outlier rejection approach for feature-based visual odoemtry. The proposed approach is based on an empirical observation which shows that some 2D-3D correspondences with very low reprojection error can cause high error in the pose estimation. This work exploits such observation for odometry, when a pair of stereo cameras is available. In fact, we argue that explicit pose error measure is desired over that of the implicit reprojection --whenever the former is possible-- to classify correspondences into inliers vs. outliers, for robust long term odometry. To explicitly measure the plausible pose error, we derive bounds on the individual pose parameters, with the help of the known orientation of stereo cameras. In this process, we formulate our bounds using the sum-of-square polynomials, which allow us to test whether a given correspondence satisfies any solution within the expected bounds. If the correspondence does not satisfy bounds for any parameter, it is considered to be an outlier. We implemented and tested the proposed method for UAV indoor navigation. The experiments from both benchmark  and UAV onboard test indicate that the inlier group refined by proposed method significantly improves odometry estimation, compare to the traditional outlier rejection methods. In fact, the proposed method performs as accurate as IMU-aidded methods in the state-of-the-art.
+This paper presents a novel outlier rejection approach for feature-based visual odometry. The proposed approach is based on an empirical observation that shows that some 2D-3D correspondences with very low reprojection error can cause a high error in the pose estimation. This work exploits such observation for odometry when a pair of stereo cameras are available. In fact, we argue that explicit pose error measure is desired over that of the implicit reprojection --whenever the former is possible-- to classify correspondences into inliers vs. outliers, for robust long term odometry. To explicitly measure the plausible pose error, we derive bounds on the individual pose parameters, with the help of the known orientation of stereo cameras. In this process, we formulate our bounds using the sum-of-square polynomials, which allow us to test whether a given correspondence satisfies any solution within the expected bounds. If the correspondence does not satisfy bounds for any parameter, it is considered to be an outlier. We implemented and tested the proposed method for UAV indoor navigation. The experiments from both benchmark and UAV onboard tests indicate that the inlier group refined by the proposed method significantly improves odometry estimation, compared to the traditional outlier rejection methods. In fact, the proposed method performs as accurately as IMU-aided methods in the state-of-the-art.
 
 ### 3-Support Camera/Dataset:
 EuRoC MAV Dataset, Intel Realsense T265, KITTI(ros melodic)
 ### 4-Build The Project
-We have tested in the following environment: <br />
-Ubuntu 16.04 + ROS Kinetic (recommend) <br />
-Ubuntu 18.04 + ROS melodic (parameters in config file need to be refined) <br />
+We have tested in the following environment:
+
+Ubuntu 16.04 + ROS Kinetic (recommend)
+
+Ubuntu 18.04 + ROS melodic (parameters in config file need to be refined)
 
 4.1 Clone the repository to the catkin work space eg. /catkin_ws/src
 
