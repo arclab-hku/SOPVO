@@ -2,9 +2,9 @@
 
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find sopvo)/rviz/sopvo_kitti.rviz" />
     <param name="/yamlconfigfile" type="string" value="$(find sopvo)/config/kitti_1241.yaml"/>
-    <param name="/voparamfilepath" type="string" value="$(find sopvo)/config/vo_params_kitti_kinetic.yaml"/>
+    <param name="/voparamfilepath" type="string" value="$(find sopvo)/config/vo_params_kitti_melodic.yaml"/>
     <param name="/output_file_path" type="string" value="$(find sopvo)/results/kitti_stereo_00.txt" />
-    <node pkg="rosbag" type="play" name="rosbag" args="$(find sopvo)/bag/kitti_stereo_00.bag"/>
+    <node pkg="rosbag" type="play" name="rosbag" args="-r 0.5 $(find sopvo)/kitti/bag/kitti_stereo_00.bag"/>
     <arg name="node_start_delay" default="0.0" />
     <param name="/voc"             type="string" value="$(find sopvo)/voc/voc_orb.dbow3"/>
     <!-- Manager -->
