@@ -9,20 +9,20 @@ sopvo.BAenable: 0 # bundle adjustment, default 0 (disable), currently not availa
 sopvo.addNewKeypoint: 1 # add new keypoints in each new frame (this will slowdown the process), default 0
 sopvo.reprojectionErrorPessimistic: 6 # inliers
 sopvo.reprojectionErrorOptimistic: 12 # outliers will be rejected by orientation prior
-sopvo.depthLearningRate: 0.5
+sopvo.depthLearningRate: 0.8
 sopvo.depthDifferenceThreshold: 0.5 # default 0.01
 #--------------------------------------------------------------------------------------------
 # Feature detection Parameters
 #--------------------------------------------------------------------------------------------
 # grided detection
-feature.gridW: 16 # default 2
-feature.gridH: 4 # default 2
+feature.gridW: 2 # default 2
+feature.gridH: 1 # default 2
 feature.boundaryBoxSize: 5 # default 5
 # ORB Extractor: Number of features per image patch
-feature.nFeatures: 5 # default 50
+feature.nFeatures: 250 # default 50
 #--------------------------------------------------------------------------------------------
 # Orientation Prior Parameters
 #--------------------------------------------------------------------------------------------
 sopvo.sosEnableFlag: 1 # default 1 (enable)
-sopvo.sosAlphaForR: 0.0001 # default 0.0001
+sopvo.sosAlphaForR: 0.01 # default 0.0001
 sopvo.sosBetaForT: 0.5 # default 0.5
