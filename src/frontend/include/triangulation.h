@@ -14,10 +14,10 @@ public:
                                 SE3 T_c_w2,
                                 double fx, double fy, double cx, double cy);
 
-    static bool trignaulationPtFromStereo(Vec2 pt0, Vec2 pt1,
-                                          Mat3x3 c0Matrix, Mat3x3 c1Matrix,
-                                          SE3 T_c1_c0,
-                                          Vec3 &pt3d_c);
+    // static bool trignaulationPtFromStereo(Vec2 pt0, Vec2 pt1,
+    //                                       Mat3x3 c0Matrix, Mat3x3 c1Matrix,
+    //                                       SE3 T_c1_c0,
+    //                                       Vec3 &pt3d_c);
     static bool trignaulationPtFromStereo(Vec2 pt0, Vec2 pt1,
                                           Mat3x4 P0, Mat3x4 P1,
                                           Vec3 &pt3d_c);

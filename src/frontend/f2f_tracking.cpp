@@ -350,7 +350,7 @@ bool F2FTracking::pnp_from_lastframe()
         cv::Mat t_ = cv::Mat::zeros(3, 1, CV_64FC1);
         cv::Mat r_old = cv::Mat::zeros(3, 1, CV_64FC1);
         cv::Mat t_old = cv::Mat::zeros(3, 1, CV_64FC1);
-        SE3_to_rvec_tvec(last_frame->T_c_w, r_ , t_ );
+        SE3_to_rvec_tvec(last_frame->T_c_w, r_ , t_ ); 
         SE3_to_rvec_tvec(last_frame->T_c_w, r_old , t_old );
         cv::Mat inliers;
         solvePnPRansac(p3d,p2d,K0_rect,D0_rect,
@@ -398,7 +398,7 @@ void F2FTracking::image_feed(const double time,
     curr_frame->frame_id = frameCount;
     curr_frame->frame_time = time;
     curr_frame->T_c_w = T_c_w_last_frame;
-    switch(this->cam_type)
+    switch(this->cam_type) 
     {
         case STEREO_KITTI:
             curr_frame->img0 = img0_in.clone();
@@ -529,8 +529,10 @@ void F2FTracking::image_feed(const double time,
                         Vec3 lm_c_update;
                         Vec3 dist_3d = lm_c - lm_c_measure;
                         Vec2 reProj = curr_frame->d_camera.camera2pixel(lm_c);
+                        Vec2 reProj_measure = curr_frame->d_camera.camera2pixel(lm_c_measure);
                         Vec2 err = pts2d_img0.at(i)-reProj;
-                        if (err.norm() < reprojectionErrorPessimistic)
+                        Vec2 err_measure = pts2d_img0.at(i)-reProj_measure;
+                        if (err.norm() < reprojectionErrorPessimistic && err_measure.norm() < reprojectionErrorPessimistic)
                         {
                             if (dist_3d.norm() < depth_difference_threshold)
                             {
@@ -546,7 +548,15 @@ void F2FTracking::image_feed(const double time,
                             curr_frame->landmarks.at(i).lmState = LMSTATE_NORMAL;
                             curr_frame->landmarks.at(i).lm_tracking_state = LM_TRACKING_INLIER;
                         }
-                        else if(err.norm() < reprojectionErrorOptimistic && sosEnableFlag)
+                        // else if (err.norm() < reprojectionErrorPessimistic)
+                        // {
+                        //     lm_c_update = lm_c;
+                        // }
+                        // else if (err_measure.norm() < reprojectionErrorPessimistic)
+                        // {
+                        //     lm_c_update = lm_c_measure;
+                        // }
+                        else if(err.norm() < reprojectionErrorOptimistic && err_measure.norm() < reprojectionErrorOptimistic && sosEnableFlag) // stereo orientation prior check
                         {
                             op_evaluate_counter ++;
                             Vec3 lm_c_update = (1 - depth_learning_rate)*lm_c + depth_learning_rate*lm_c_measure;
@@ -641,6 +651,13 @@ void F2FTracking::image_feed(const double time,
             double t_norm = fabs(t[0]) + fabs(t[1]) + fabs(t[2]);
             double r_norm = fabs(r[0]) + fabs(r[1]) + fabs(r[2]);
             // cout << "t_norm = " << t_norm << " r_norm = " << r_norm << endl;
+            // if it is kitti test, remove the Z axis
+            // if (this->cam_type == STEREO_KITTI)
+            // {
+            //     cv::Mat Rm_;
+            //     cv::Rodrigues ( r_, Rm_ );
+            // }
+
             if(t_norm < MAXIMUM_T_ERROR && r_norm < MAXIMUM_T_ERROR)
             {
                 // new_keyframe = true;

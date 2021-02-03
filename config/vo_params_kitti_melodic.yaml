@@ -9,7 +9,7 @@ sopvo.BAenable: 0 # bundle adjustment, default 0 (disable), currently not availa
 sopvo.addNewKeypoint: 1 # add new keypoints in each new frame (this will slowdown the process), default 0
 sopvo.reprojectionErrorPessimistic: 6 # inliers
 sopvo.reprojectionErrorOptimistic: 12 # outliers will be rejected by orientation prior
-sopvo.depthLearningRate: 0.8
+sopvo.depthLearningRate: 1 # 0.8
 sopvo.depthDifferenceThreshold: 0.5 # default 0.01
 #--------------------------------------------------------------------------------------------
 # Feature detection Parameters

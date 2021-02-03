@@ -240,8 +240,12 @@ private:
             SE3 T_w_c = this->cam_tracker->curr_frame->T_c_w.inverse();
             Vector3d t = T_w_c.translation();
             Quaterniond q = T_w_c.unit_quaternion();
+            Mat3x3 R_ = q.toRotationMatrix();
             fd.open(output_file_path.c_str(),ios::app);
-            fd << setprecision(6) << t[0] << " " << t[1] << " " << t[2] << " " << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << std::endl;
+            fd << setprecision(6) << R_(0,0) << " " << R_(0,1) << " " << R_(0,2) << " " <<  t[0] << " ";
+            fd << setprecision(6) << R_(1,0) << " " << R_(1,1) << " " << R_(1,2) << " " <<  t[1] << " ";
+            fd << setprecision(6) << R_(2,0) << " " << R_(2,1) << " " << R_(2,2) << " " <<  t[2] << std::endl;
+            // fd << setprecision(6) << t[0] << " " << t[1] << " " << t[2] << " " << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << std::endl;
             fd.close();
         }
     }//image_input_callback(const sensor_msgs::ImageConstPtr & imgPtr, const sensor_msgs::ImageConstPtr & depthImgPtr)

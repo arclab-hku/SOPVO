@@ -7,6 +7,7 @@
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Geometry>
+// #include <vector> 
 
 
 #include <pcl/point_types.h>
@@ -191,6 +192,130 @@ inline g2o::SE3Quat SE3_to_g2o(SE3 &se3_pose)
 
   return g2o::SE3Quat(q, t);
 
+}
+
+// inline cv::Mat eulerAnglesToRotationMatrix(const cv::Vec3f &theta)
+// {
+//     // Calculate rotation about x axis
+//     cv::Mat R_x = (cv::Mat_<double>(3,3) <<
+//         1,       0,              0,
+//         0,       cos(theta[0]),   -sin(theta[0]),
+//         0,       sin(theta[0]),   cos(theta[0])
+//     );
+//     // Calculate rotation about y axis
+//     cv::Mat R_y = (cv::Mat_<double>(3,3) <<
+//         cos(theta[1]),    0,      sin(theta[1]),
+//         0,               1,      0,
+//         -sin(theta[1]),   0,      cos(theta[1])
+//     );
+//     // Calculate rotation about z axis
+//     cv::Mat R_z = (cv::Mat_<double>(3,3) <<
+//         cos(theta[2]),    -sin(theta[2]),      0,
+//         sin(theta[2]),    cos(theta[2]),       0,
+//         0,               0,                  1
+//     );
+//     // Combined rotation matrix
+//     cv::Mat R = R_z * R_y * R_x;
+//     return R;
+// }
+
+// inline cv::Vec3f rotationMatrixToEulerAngles(cv::Mat &R)
+// {
+//     float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );
+//     bool singular = sy < 1e-6; // If
+//     float x, y, z;
+//     if (!singular)
+//     {
+//         x = atan2(R.at<double>(2,1) , R.at<double>(2,2));
+//         y = atan2(-R.at<double>(2,0), sy);
+//         z = atan2(R.at<double>(1,0), R.at<double>(0,0));
+//     }
+//     else
+//     {
+//         x = atan2(-R.at<double>(1,2), R.at<double>(1,1));
+//         y = atan2(-R.at<double>(2,0), sy);
+//         z = 0;
+//     }
+//     #if 1
+//     x = x*180.0f/3.141592653589793f;
+//     y = y*180.0f/3.141592653589793f;
+//     z = z*180.0f/3.141592653589793f;
+//     #endif
+//     return cv::Vec3f(x, y, z);
+// }
+
+inline Eigen::Quaterniond euler2Quaternion(const double roll, const double pitch, const double yaw)
+{
+    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
+    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
+    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());
+ 
+    Eigen::Quaterniond q = rollAngle * yawAngle * pitchAngle;
+    // cout << "Euler2Quaternion result is:" <<endl;
+    // cout << "x = " << q.x() <<endl;
+    // cout << "y = " << q.y() <<endl;
+    // cout << "z = " << q.z() <<endl;
+    // cout << "w = " << q.w() <<endl<<endl;
+    return q;
+}
+inline Eigen::Vector3d Quaterniond2Euler(const double x,const double y,const double z,const double w)
+{
+    Eigen::Quaterniond q;
+    q.x() = x;
+    q.y() = y;
+    q.z() = z;
+    q.w() = w;
+    Eigen::Vector3d euler = q.toRotationMatrix().eulerAngles(2, 1, 0);
+    // cout << "Quaterniond2Euler result is:" <<endl;
+    // cout << "x = "<< euler[2] << endl ;
+    // cout << "y = "<< euler[1] << endl ;
+    // cout << "z = "<< euler[0] << endl << endl;
+}
+inline Eigen::Matrix3d Quaternion2RotationMatrix(const double x,const double y,const double z,const double w)
+{
+    Eigen::Quaterniond q;
+    q.x() = x;
+    q.y() = y;
+    q.z() = z;
+    q.w() = w;
+    Eigen::Matrix3d R = q.normalized().toRotationMatrix();
+    // cout << "Quaternion2RotationMatrix result is:" <<endl;
+    // cout << "R = " << endl << R << endl<< endl;
+    return R;
+}
+inline Eigen::Quaterniond rotationMatrix2Quaterniond(Eigen::Matrix3d R)
+{
+    Eigen::Quaterniond q = Eigen::Quaterniond(R);
+    q.normalize();
+    // cout << "RotationMatrix2Quaterniond result is:" <<endl;
+    // cout << "x = " << q.x() <<endl;
+    // cout << "y = " << q.y() <<endl;
+    // cout << "z = " << q.z() <<endl;
+    // cout << "w = " << q.w() <<endl<<endl;
+    return q;
+}
+inline Eigen::Matrix3d euler2RotationMatrix(const double roll, const double pitch, const double yaw)
+{
+    Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
+    Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
+    Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());
+    Eigen::Quaterniond q = rollAngle * yawAngle * pitchAngle;
+    Eigen::Matrix3d R = q.matrix();
+    // cout << "Euler2RotationMatrix result is:" <<endl;
+    // cout << "R = " << endl << R << endl<<endl;
+    return R;
+}
+inline Eigen::Vector3d RotationMatrix2euler(cv::Mat R_)
+{
+    Mat3x3 R = cvMat_to_Mat3x3(R_);
+    Eigen::Matrix3d m;
+    m = R;
+    Eigen::Vector3d euler = m.eulerAngles(0, 1, 2);
+    // cout << "RotationMatrix2euler result is:" << endl;
+    // cout << "x = "<< euler[2] << endl ;
+    // cout << "y = "<< euler[1] << endl ;
+    // cout << "z = "<< euler[0] << endl << endl;
+    return euler;
 }
 
 
