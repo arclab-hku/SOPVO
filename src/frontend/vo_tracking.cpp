@@ -101,6 +101,9 @@ private:
         if(cam_type_from_yaml==0) cam_type = STEREO_KITTI;
         if(cam_type_from_yaml==1) cam_type = STEREO_EuRoC_MAV;
         if(cam_type_from_yaml==2) cam_type = Realsense_T265;
+        Mat4x4  initPose = Mat44FromYaml(configFilePath,"T_init");
+        SE3 T_init = SE3(initPose.topLeftCorner(3,3),initPose.topRightCorner(3,1));
+
         if(cam_type==STEREO_KITTI)
         {
             cv::Mat cam0_cameraMatrix = cameraMatrixFromYamlIntrinsics(configFilePath,"cam0_intrinsics");
@@ -123,7 +126,8 @@ private:
                               STEREO_KITTI,
                               1.0,
                               cam1_cameraMatrix,cam1_distCoeffs,
-                              T_c0_c1);
+                              T_c0_c1,
+                              T_init);
 
             exactSync_ = new message_filters::Synchronizer<MyExactSyncPolicy>(MyExactSyncPolicy(2), img0_sub, img1_sub);
             exactSync_->registerCallback(boost::bind(&TrackingNodeletClass::image_input_callback, this, _1, _2));
@@ -151,7 +155,8 @@ private:
                               STEREO_EuRoC_MAV,
                               1.0,
                               cam1_cameraMatrix,cam1_distCoeffs,
-                              T_c0_c1);
+                              T_c0_c1,
+                              T_init);
             
             exactSync_ = new message_filters::Synchronizer<MyExactSyncPolicy>(MyExactSyncPolicy(2), img0_sub, img1_sub);
             exactSync_->registerCallback(boost::bind(&TrackingNodeletClass::image_input_callback, this, _1, _2));
@@ -185,7 +190,8 @@ private:
                               Realsense_T265,
                               1.0,
                               cam1_cameraMatrix,cam1_distCoeffs,
-                              T_c0_c1);
+                              T_c0_c1,
+                              T_init);
 
             approSync_ = new message_filters::Synchronizer<MyApproSyncPolicy>(MyApproSyncPolicy(10), img0_sub, img1_sub);
             approSync_->registerCallback(boost::bind(&TrackingNodeletClass::image_input_callback, this, _1, _2));
@@ -222,7 +228,8 @@ private:
                                       reset_cmd);
         frame_pub->pubFramePtsPoseT_c_w(this->cam_tracker->curr_frame->getValid3dPts(),
                                         this->cam_tracker->curr_frame->T_c_w,
-                                        tstamp);
+                                        tstamp);    
+
         vision_path_pub->pubPathT_c_w(this->cam_tracker->curr_frame->T_c_w,tstamp);
 
         cvtColor(cam_tracker->curr_frame->img0,img0_vis,CV_GRAY2BGR);
@@ -241,6 +248,7 @@ private:
             Vector3d t = T_w_c.translation();
             Quaterniond q = T_w_c.unit_quaternion();
             Mat3x3 R_ = q.toRotationMatrix();
+            // if it is kitti test (2D map), remove Z
             fd.open(output_file_path.c_str(),ios::app);
             fd << setprecision(6) << R_(0,0) << " " << R_(0,1) << " " << R_(0,2) << " " <<  t[0] << " ";
             fd << setprecision(6) << R_(1,0) << " " << R_(1,1) << " " << R_(1,2) << " " <<  t[1] << " ";

@@ -2,15 +2,15 @@
 #--------------------------------------------------------------------------------------------
 # VO System Parameters
 #--------------------------------------------------------------------------------------------
-sopvo.minimumKeypoint: 25 # default 20
-sopvo.maximumKeyframeShift: 15 # maximum distance between two keyframe, default 1 
+sopvo.minimumKeypoint: 25 # minimum number of keypoint
+sopvo.maximumKeyframeShift: 20 # maximum distance between two keyframe 
 sopvo.backendEnable: 0 # loop closure, default 0 (disable), currently not available
 sopvo.BAenable: 0 # bundle adjustment, default 0 (disable), currently not available
-sopvo.addNewKeypoint: 1 # add new keypoints in each new frame (this will slowdown the process), default 0
+sopvo.addNewKeypoint: 1 # add new keypoints in each new frame
 sopvo.reprojectionErrorPessimistic: 6 # inliers
-sopvo.reprojectionErrorOptimistic: 12 # outliers will be rejected by orientation prior
-sopvo.depthLearningRate: 1 # 0.8
-sopvo.depthDifferenceThreshold: 0.5 # default 0.01
+sopvo.reprojectionErrorOptimistic: 10 # outliers
+sopvo.pointLearningRate: 1 # point learning rate
+sopvo.pointDifferenceThreshold: 0.5 # valid distance between old point and updated point 
 #--------------------------------------------------------------------------------------------
 # Feature detection Parameters
 #--------------------------------------------------------------------------------------------

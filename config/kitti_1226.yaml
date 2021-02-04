@@ -8,6 +8,12 @@ type_of_cam: 0
 image_width: 1226
 image_height: 370
 
+T_init:
+[1, 0, 0, 0,
+ 0, 1, 0, 0,
+ 0, 0, 1, 0,
+ 0, 0, 0, 1]
+
 #imu, not used
 T_world_body:
 [ 1.0,  0.0,  0.0,  0.0,

@@ -1,5 +1,6 @@
 #include "include/f2f_tracking.h"
 #include <chrono>
+#include <ros/ros.h>
 
 using namespace std::chrono;
 using namespace cv;
@@ -11,29 +12,19 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
                        const TYPEOFCAMERA cam_type_in,
                        const double cam_scale_in,
                        const Mat c1_cameraMatrix_in, const Mat c1_distCoeffs_in,
-                       const SE3 T_c0_c1)
+                       const SE3 T_c0_c1,
+                       const SE3 T_init)
 {
     cv::FileStorage fsSettings(configPath, cv::FileStorage::READ);
     if(!fsSettings.isOpened())
     {
-        std::cout << "ERROR: Wrong path to settings, use default parameters..." << std::endl;
-        MINIMUM_KEYPOINTS = 25;
-        MAXIMUM_T_ERROR = 1;
-        backendEnableFlag = false;
-        BAenableFlag = false;
-        sosEnableFlag = true;
-        add_new_keypoints = true;
-        add_new_keypoints_once = false;
-        sos_alpha = 0.01;
-        sos_beta = 0.5;
-        reprojectionErrorPessimistic = 2;
-        reprojectionErrorOptimistic = 5;
-        depth_learning_rate = 0.1;
-        depth_difference_threshold = 0.1;
-        grid_w = 7;
-        grid_h = 4;
-        boundarySize = 5;
-        nFeatures = 5;
+        fsSettings.release();
+        while(true)
+        {
+            ros::Duration(1).sleep();
+            ROS_ERROR_STREAM("Wrong path for VO parameters input...");
+            // std::cout << "ERROR: Wrong path to settings, use default parameters..." << std::endl;
+        }
     }
     else
     {
@@ -49,8 +40,8 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
         sos_beta = fsSettings["sopvo.sosBetaForT"];
         reprojectionErrorPessimistic = fsSettings["sopvo.reprojectionErrorPessimistic"];
         reprojectionErrorOptimistic = fsSettings["sopvo.reprojectionErrorOptimistic"];
-        depth_learning_rate = fsSettings["sopvo.depthLearningRate"];
-        depth_difference_threshold = fsSettings["sopvo.depthDifferenceThreshold"];
+        point_learning_rate = fsSettings["sopvo.pointLearningRate"];
+        point_difference_threshold = fsSettings["sopvo.pointDifferenceThreshold"];
         backendEnableFlag = false;
         temp_value = fsSettings["sopvo.backendEnable"];
         if (temp_value != 0)
@@ -75,6 +66,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
         boundarySize = fsSettings["feature.boundaryBoxSize"];
         nFeatures = fsSettings["feature.nFeatures"];
     }
+    fsSettings.release();
     
     this->feature_dem   = new FeatureDEM(w_out,h_out,grid_w,grid_h,nFeatures,boundarySize);
     this->lkorb_tracker = new LKORBTracking(w_out,h_out);
@@ -173,14 +165,12 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     this->vo_tracking_state = Init_sopvo;
     this->has_localmap_feedback = false;
     // initial pose
-    Mat3x3 R_w_c;
+    // Mat3x3 R_w_c;
     // 0  0  1
     //-1  0  0
     // 0 -1  0
-    R_w_c << 0, 0, 1, -1, 0, 0, 0,-1, 0;
-    Vec3   t_w_c=Vec3(0,0,0);
-    SE3    T_w_c(R_w_c,t_w_c);
-    T_c_w_last_keyframe = T_w_c.inverse();
+    // R_w_c << 0, 0, 1, -1, 0, 0, 0,-1, 0;
+    T_c_w_last_keyframe = T_init.inverse();
     T_c_w_last_frame = T_c_w_last_keyframe;
     myOrientationPri->init(T_c1_c0, K1, sos_alpha, sos_beta);
 }
@@ -356,6 +346,7 @@ bool F2FTracking::pnp_from_lastframe()
         solvePnPRansac(p3d,p2d,K0_rect,D0_rect,
                     r_,t_,false,100,3.0,0.99,inliers,cv::SOLVEPNP_ITERATIVE);
         curr_frame->T_c_w = SE3_from_rvec_tvec(r_,t_); 
+        // abnormal motion detection
         SE3 T_diff_key_curr = last_frame->T_c_w*(curr_frame->T_c_w.inverse());
         Vec3 t=T_diff_key_curr.translation();
         Vec3 r=T_diff_key_curr.so3().log();
@@ -534,10 +525,10 @@ void F2FTracking::image_feed(const double time,
                         Vec2 err_measure = pts2d_img0.at(i)-reProj_measure;
                         if (err.norm() < reprojectionErrorPessimistic && err_measure.norm() < reprojectionErrorPessimistic)
                         {
-                            if (dist_3d.norm() < depth_difference_threshold)
+                            if (dist_3d.norm() < point_difference_threshold)
                             {
                                 // lm_c_update = 0.9*lm_c + 0.1*lm_c_measure;
-                                lm_c_update = (1 - depth_learning_rate)*lm_c + depth_learning_rate*lm_c_measure;
+                                lm_c_update = (1 - point_learning_rate)*lm_c + point_learning_rate*lm_c_measure;
                             }
                             else
                             {
@@ -548,18 +539,10 @@ void F2FTracking::image_feed(const double time,
                             curr_frame->landmarks.at(i).lmState = LMSTATE_NORMAL;
                             curr_frame->landmarks.at(i).lm_tracking_state = LM_TRACKING_INLIER;
                         }
-                        // else if (err.norm() < reprojectionErrorPessimistic)
-                        // {
-                        //     lm_c_update = lm_c;
-                        // }
-                        // else if (err_measure.norm() < reprojectionErrorPessimistic)
-                        // {
-                        //     lm_c_update = lm_c_measure;
-                        // }
                         else if(err.norm() < reprojectionErrorOptimistic && err_measure.norm() < reprojectionErrorOptimistic && sosEnableFlag) // stereo orientation prior check
                         {
                             op_evaluate_counter ++;
-                            Vec3 lm_c_update = (1 - depth_learning_rate)*lm_c + depth_learning_rate*lm_c_measure;
+                            Vec3 lm_c_update = (1 - point_learning_rate)*lm_c + point_learning_rate*lm_c_measure;
                             myOrientationPri->getPair(pts2d_img1.at(i), lm_c_update);
                             if(myOrientationPri->sosFeasibilityCheck())
                             {
@@ -591,7 +574,7 @@ void F2FTracking::image_feed(const double time,
                     }
                 }
                 curr_frame->eraseReprjOutlier();
-                cout << "orientation prior:" << op_rejected_counter << " out of " << op_evaluate_counter << " points are rejected..." << endl;
+                // cout << "orientation prior:" << op_rejected_counter << " out of " << op_evaluate_counter << " points are rejected..." << endl;
             }
             catch(const std::exception& e)
             {
@@ -645,19 +628,25 @@ void F2FTracking::image_feed(const double time,
                     break;
                 }
             }
-            SE3 T_diff_last_curr = T_c_w_last_frame*(curr_frame->T_c_w.inverse());
-            Vec3 t=T_diff_last_curr.translation();
-            Vec3 r=T_diff_last_curr.so3().log();
+
+            // SE3 T_diff = T_c_w_last_frame.inverse()*curr_frame->T_c_w;
+            // Vec3 t = T_diff.translation();
+            // Vec3 r = T_diff.so3().log();
+            SE3 T_curr_last = curr_frame->T_c_w*(T_c_w_last_frame.inverse());
+            Vec3 t = T_curr_last.translation();
+            Vec3 r = T_curr_last.so3().log();
             double t_norm = fabs(t[0]) + fabs(t[1]) + fabs(t[2]);
             double r_norm = fabs(r[0]) + fabs(r[1]) + fabs(r[2]);
             // cout << "t_norm = " << t_norm << " r_norm = " << r_norm << endl;
-            // if it is kitti test, remove the Z axis
+            // if it is kitti test (2D map), remove the roll and pitch motion
             // if (this->cam_type == STEREO_KITTI)
             // {
-            //     cv::Mat Rm_;
-            //     cv::Rodrigues ( r_, Rm_ );
+            //     // Quaterniond q_diff = T_diff.unit_quaternion();
+            //     // Mat3x3 R_diff = q_diff.toRotationMatrix();
+            //     // Eigen::Vector3d euler = R_diff.eulerAngles(2, 1, 0);//roll pitch yaw
+            //     // Mat3x3 R_rp = euler2RotationMatrix(euler[0],euler[1],0);
+            //     // // cout << "euler angle " << euler.transpose() << endl;
             // }
-
             if(t_norm < MAXIMUM_T_ERROR && r_norm < MAXIMUM_T_ERROR)
             {
                 // new_keyframe = true;

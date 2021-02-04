@@ -271,19 +271,19 @@ inline Eigen::Vector3d Quaterniond2Euler(const double x,const double y,const dou
     // cout << "y = "<< euler[1] << endl ;
     // cout << "z = "<< euler[0] << endl << endl;
 }
-inline Eigen::Matrix3d Quaternion2RotationMatrix(const double x,const double y,const double z,const double w)
+inline Mat3x3 Quaternion2RotationMatrix(const double x,const double y,const double z,const double w)
 {
     Eigen::Quaterniond q;
     q.x() = x;
     q.y() = y;
     q.z() = z;
     q.w() = w;
-    Eigen::Matrix3d R = q.normalized().toRotationMatrix();
+    Mat3x3 R = q.normalized().toRotationMatrix();
     // cout << "Quaternion2RotationMatrix result is:" <<endl;
     // cout << "R = " << endl << R << endl<< endl;
     return R;
 }
-inline Eigen::Quaterniond rotationMatrix2Quaterniond(Eigen::Matrix3d R)
+inline Eigen::Quaterniond rotationMatrix2Quaterniond(Mat3x3 R)
 {
     Eigen::Quaterniond q = Eigen::Quaterniond(R);
     q.normalize();
@@ -294,29 +294,29 @@ inline Eigen::Quaterniond rotationMatrix2Quaterniond(Eigen::Matrix3d R)
     // cout << "w = " << q.w() <<endl<<endl;
     return q;
 }
-inline Eigen::Matrix3d euler2RotationMatrix(const double roll, const double pitch, const double yaw)
+inline Mat3x3 euler2RotationMatrix(const double roll, const double pitch, const double yaw)
 {
     Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
     Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
     Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());
     Eigen::Quaterniond q = rollAngle * yawAngle * pitchAngle;
-    Eigen::Matrix3d R = q.matrix();
+    Mat3x3 R = q.matrix();
     // cout << "Euler2RotationMatrix result is:" <<endl;
     // cout << "R = " << endl << R << endl<<endl;
     return R;
 }
 inline Eigen::Vector3d RotationMatrix2euler(cv::Mat R_)
 {
-    Mat3x3 R = cvMat_to_Mat3x3(R_);
-    Eigen::Matrix3d m;
-    m = R;
-    Eigen::Vector3d euler = m.eulerAngles(0, 1, 2);
-    // cout << "RotationMatrix2euler result is:" << endl;
-    // cout << "x = "<< euler[2] << endl ;
-    // cout << "y = "<< euler[1] << endl ;
-    // cout << "z = "<< euler[0] << endl << endl;
+    Mat3x3 m = cvMat_to_Mat3x3(R_);
+    Eigen::Vector3d euler = m.eulerAngles(2, 1, 0); //roll pitch yaw
     return euler;
 }
-
+inline void separateRollPitchYaw(Mat3x3 R_, Mat3x3 &R_roll, Mat3x3 &R_pitch, Mat3x3 &R_yaw)
+{
+    Eigen::Vector3d euler = R_.eulerAngles(2, 1, 0);
+    R_roll = euler2RotationMatrix(euler[0],0,0);
+    R_pitch = euler2RotationMatrix(0,euler[1],0);
+    R_yaw = euler2RotationMatrix(0,0,euler[2]);
+}
 
 #endif // COMMON_H

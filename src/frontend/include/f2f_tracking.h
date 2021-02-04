@@ -62,7 +62,8 @@ public:
               const double cam_scale_in=1000.0,
               const cv::Mat c1_cameraMatrix_in = cv::Mat1d(3, 3),
               const cv::Mat c1_distCoeffs_in = cv::Mat1d(4, 1),
-              const SE3 T_c0_c1=SE3());
+              const SE3 T_c0_c1=SE3(),
+              const SE3 T_init=SE3());
 
 private:
     int MINIMUM_KEYPOINTS;
@@ -80,8 +81,8 @@ private:
     double sos_beta;
     double reprojectionErrorPessimistic;
     double reprojectionErrorOptimistic;
-    double depth_learning_rate;
-    double depth_difference_threshold;
+    double point_learning_rate;
+    double point_difference_threshold;
     bool init_frame(void);
     bool reset_keyframe(void);
     bool pnp_from_lastframe(void);
