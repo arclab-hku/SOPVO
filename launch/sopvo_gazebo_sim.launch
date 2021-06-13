@@ -1,0 +1,17 @@
+<launch>
+    <param name="/yamlconfigfile" type="string" value="$(find sopvo)/config/e2es_sim.yaml"/>
+    <param name="/voparamfilepath" type="string" value="$(find sopvo)/config/vo_params_gazebo_sim.yaml"/>
+    <arg name="node_start_delay" default="0.0" />
+    <param name="/voc"             type="string" value="$(find sopvo)/voc/voc_orb.dbow3"/>
+    <!-- Manager -->
+    <node pkg="nodelet" type="nodelet" name="sopvo_nodelet_manager"  args="manager" output="screen"
+    launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "/>
+    <!-- TrackingNode, stereo vision only -->
+    <node pkg="nodelet" type="nodelet" args="load sopvo/TrackingNodeletClass sopvo_nodelet_manager"
+        name="TrackingNodeletClass_loader" output="screen"
+        launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+        <param name="num_worker_threads" type="int" value="3" />
+	<remap from="/vo/image0"   to="/camera/infra1/image_raw"/>
+        <remap from="/vo/image1"   to="/camera/infra2/image_raw"/>
+    </node>
+</launch>

@@ -15,8 +15,11 @@ Abstruct:
 This paper presents a novel outlier rejection approach for feature-based visual odometry. The proposed approach is based on an empirical observation that shows that some 2D-3D correspondences with very low reprojection error can cause a high error in pose estimation. This work exploits such observations for odometry when a stereo camera is available. We argue that an explicit pose error measure is desired over that of implicit reprojection -- whenever the former is possible -- to classify correspondences into inliers vs. outliers for robust long-term odometry. To explicitly measure the plausible pose error, we derive bounds on the individual pose parameters with the help of the known orientation of stereo cameras. In this process, we formulate our bounds using the sum-of-square polynomials, which allow us to test whether a given correspondence satisfies any solution within the expected bounds. If the correspondence does not satisfy bounds for any parameter, it is considered to be an outlier. We implemented and tested the proposed method for UAV indoor navigation. The experiments from both benchmark and UAV onboard tests indicate that the inlier group refined by the proposed method significantly improves odometry estimation compared to the traditional outlier rejection methods. In fact, the proposed method performs as accurately as IMU-aided methods in the state of the art.
 
 ### 3-Support Camera/Dataset:
+
 EuRoC MAV Dataset, Intel Realsense T265, KITTI(ros melodic)
-### 4-Build The Project
+
+### 4-Build The Project:
+
 We have tested in the following environment:
 
 Ubuntu 16.04 + ROS Kinetic (recommend)
@@ -34,7 +37,8 @@ Ubuntu 18.04 + ROS melodic (parameters in config file need to be refined)
 cd ~/catkin_ws
 catkin_make
 ````
-### 5-Verification
+### 5-Verification:
+
 5.1 EuRoC MAV Dataset
 Download the dataset(say MH_05_difficult) into the bag folder:
 ````
@@ -70,10 +74,19 @@ http://www.cvlibs.net/datasets/kitti/eval_odometry_detail.php?&result=8ec81d01a1
 5.4 Other datasets:
 Please wait for update.
 
+### Fly in simulation:
+
+Please install our Gazebo simulation tool from: https://github.com/rduan036/E2ES.git
+
+````
+roslaunch sopvo sopvo_gazebo_sim.launch
+````
+
 ### Maintainer:
+
 Ran Duan, ArcLab at PolyU, HK, China
 ran-sn.duan@connect.polyu.hk
 rduan036@gmail.com
 
 ### Acknowledgement:
-I would like to thank Dr. Shengyang Chen(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk, this code is partly refered to his work FLVIS: https://github.com/Ttoto/FLVIS
+I would like to thank Dr. Shengyang Chen(Dept.ME,PolyU) for his assistant in coding.  
