@@ -44,7 +44,7 @@ private:
     message_filters::Synchronizer<MyExactSyncPolicy> * exactSync_;
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MyApproSyncPolicy;
     message_filters::Synchronizer<MyApproSyncPolicy> * approSync_;
-    ros::Subscriber correction_inf_sub;
+    ros::Subscriber senser_fusion_pose;
 
     //Octomap
     OctomapFeeder* octomap_pub;
@@ -54,6 +54,7 @@ private:
     image_transport::Publisher img0_pub;
     image_transport::Publisher img1_pub;
     ros::Publisher vision_pose_pub;
+
     RVIZFrame* frame_pub;
     RVIZPath*  vision_path_pub;
     RVIZPath*  path_lc_pub;

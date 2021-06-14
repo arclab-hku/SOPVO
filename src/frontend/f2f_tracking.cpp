@@ -38,6 +38,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
         }
         sos_alpha = fsSettings["sopvo.sosAlphaForR"];
         sos_beta = fsSettings["sopvo.sosBetaForT"];
+        sop_max_iter = fsSettings["sopvo.maxIter"];
         reprojectionErrorPessimistic = fsSettings["sopvo.reprojectionErrorPessimistic"];
         reprojectionErrorOptimistic = fsSettings["sopvo.reprojectionErrorOptimistic"];
         point_learning_rate = fsSettings["sopvo.pointLearningRate"];
@@ -172,7 +173,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     // R_w_c << 0, 0, 1, -1, 0, 0, 0,-1, 0;
     T_c_w_last_keyframe = T_init.inverse();
     T_c_w_last_frame = T_c_w_last_keyframe;
-    myOrientationPri->init(T_c1_c0, K1, sos_alpha, sos_beta);
+    myOrientationPri->init(T_c1_c0, K1, sos_alpha, sos_beta, sop_max_iter);
 }
 
 bool F2FTracking::init_frame()

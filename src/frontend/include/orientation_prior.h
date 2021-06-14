@@ -18,10 +18,11 @@ class OrientationPri
     void getQg(void);
     void printVector(double* ele, int dim, char* printFormat, FILE* fpout);
   public:
+    int max_iter;
     typedef std::shared_ptr<OrientationPri> Ptr;
     OrientationPri();
     ~OrientationPri();
-    void init(SE3 T_c1c0, cv::Mat K, double r_error, double t_error);
+    void init(SE3 T_c1c0, cv::Mat K, double r_error, double t_error, int max_iter_number);
     void getPair(Vec2 p2d, Vec3 p3d);
     bool sosFeasibilityCheck(void);
     void clearPair(void);

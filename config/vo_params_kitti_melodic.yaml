@@ -26,3 +26,4 @@ feature.nFeatures: 250 # default 50
 sopvo.sosEnableFlag: 1 # default 1 (enable)
 sopvo.sosAlphaForR: 0.01 # default 0.0001
 sopvo.sosBetaForT: 0.5 # default 0.5
+sopvo.maxIter: 100

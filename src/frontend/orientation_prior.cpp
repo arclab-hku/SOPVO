@@ -5,7 +5,7 @@ using namespace std;
 OrientationPri::OrientationPri()
 {}
 
-void OrientationPri::init(SE3 T_c1c0, cv::Mat K, double r_error, double t_error)
+void OrientationPri::init(SE3 T_c1c0, cv::Mat K, double r_error, double t_error, int max_iter_number = 100)
 {
     K_inv = K.inv();
     cv::Mat R_ = cv::Mat::zeros(3, 3, CV_64FC1);
@@ -31,6 +31,8 @@ void OrientationPri::init(SE3 T_c1c0, cv::Mat K, double r_error, double t_error)
     var_minmax.at<double>(3,1) = t_new.at<double>(0,0) + t_error;
     var_minmax.at<double>(4,1) = t_new.at<double>(1,0) + t_error;
     var_minmax.at<double>(5,1) = t_new.at<double>(2,0) + t_error;
+
+    max_iter = max_iter_number;
 }
 
 void OrientationPri::getPair(Vec2 p2d, Vec3 p3d)
@@ -107,7 +109,7 @@ bool OrientationPri::sosFeasibilityCheck()
     // myLMIs.setDisplay(stdout);
     myLMIs.setParameterType(SDPA::PARAMETER_DEFAULT);
     // myLMIs.printParameters(stdout);
-    // myLMIs.setParameterMaxIteration(100);
+    myLMIs.setParameterMaxIteration(max_iter);
     int mDIM   = 10;
     int nBlock = 1;
     myLMIs.inputConstraintNumber(mDIM);
@@ -187,7 +189,7 @@ bool OrientationPri::sosFeasibilityCheck()
     myLMIs.initializeSolve();
     myLMIs.solve();
 
-    if (myLMIs.getIteration() < 100)
+    if (myLMIs.getIteration() < max_iter)
     {
         double* ele = myLMIs.getResultXVec();
         for (int k=4; k<myLMIs.getConstraintNumber(); k++) 

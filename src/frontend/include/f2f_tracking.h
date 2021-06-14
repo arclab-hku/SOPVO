@@ -45,6 +45,7 @@ public:
     deque<ID_POSE> pose_records;
     CameraFrame::Ptr curr_frame,last_frame,last_keyframe;
     OrientationPri::Ptr myOrientationPri;
+    int sop_max_iter;
 
     void image_feed(const double time,
                     const cv::Mat img0_in,
