@@ -19,12 +19,12 @@ feature.gridW: 2 # default 2
 feature.gridH: 2 # default 2
 feature.boundaryBoxSize: 5 # default 5
 # ORB Extractor: Number of features per image patch
-feature.nFeatures: 200 # default 50
+feature.nFeatures: 50 # default 50
 #--------------------------------------------------------------------------------------------
 # Orientation Prior Parameters
 #--------------------------------------------------------------------------------------------
 sopvo.sosEnableFlag: 1 # default 1 (enable)
 sopvo.sosAlphaForR: 0.01 # default 0.0001
 sopvo.sosBetaForT: 0.5 # default 0.5
-sopvo.maxIter: 100
+sopvo.maxIter: 50
 

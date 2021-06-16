@@ -44,23 +44,26 @@ private:
     message_filters::Synchronizer<MyExactSyncPolicy> * exactSync_;
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MyApproSyncPolicy;
     message_filters::Synchronizer<MyApproSyncPolicy> * approSync_;
-    ros::Subscriber senser_fusion_pose;
+    ros::Subscriber senser_fusion_sub;
 
     //Octomap
-    OctomapFeeder* octomap_pub;
-    //Visualization
+    // OctomapFeeder* octomap_pub;
+
+    //Pub pose
+    ros::Publisher vision_pose_pub;
+
+    //Pub rviz Visualization msg
     cv::Mat img0_vis;
     cv::Mat img1_vis;
     image_transport::Publisher img0_pub;
-    image_transport::Publisher img1_pub;
-    ros::Publisher vision_pose_pub;
+    // image_transport::Publisher img1_pub;
 
     RVIZFrame* frame_pub;
     RVIZPath*  vision_path_pub;
     RVIZPath*  path_lc_pub;
     tf::StampedTransform tranOdomMap;
     tf::TransformListener listenerOdomMap;
-    //result output
+
     int frame_counter;
     bool enable_output_file;
     std::ofstream fd;
@@ -75,7 +78,7 @@ private:
         frame_pub       = new RVIZFrame(nh,"/vo_camera_pose","map","/vo_curr_frame","map");
         image_transport::ImageTransport it(nh);
         img0_pub = it.advertise("/vo_img0", 1);
-        img1_pub = it.advertise("/vo_img1", 1);
+        // img1_pub = it.advertise("/vo_img1", 1);
 
         cam_tracker = new F2FTracking();
         //Load Parameter
@@ -210,8 +213,25 @@ private:
             fd.open(output_file_path.c_str());
             fd.close();
         }
-
+        // get sensor fusion pose feedback
+        senser_fusion_sub = nh.subscribe<geometry_msgs::PoseStamped>("/mavros/local_position/pose", 1, boost::bind(&TrackingNodeletClass::sensor_fusion_pose_callback, this, _1));
         cout << "start tracking thread" << endl;
+    }
+
+    void sensor_fusion_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+    {
+        Quaterniond q;
+        q.x() = msg->pose.orientation.x;
+        q.y() = msg->pose.orientation.y;
+        q.z() = msg->pose.orientation.z;
+        q.w() = msg->pose.orientation.w;
+        Vec3 t;
+        t[0] = msg->pose.position.x;
+        t[1] = msg->pose.position.y;
+        t[2] = msg->pose.position.z;
+        // cout << "fusion pose: " << t << endl;
+        SE3 T_w_c_fusion = SE3(q.toRotationMatrix(), t);
+        this->cam_tracker->T_c_w_last_frame = T_w_c_fusion.inverse();
     }
     
     void image_input_callback(const sensor_msgs::ImageConstPtr & img0_Ptr,
@@ -249,7 +269,6 @@ private:
             Vector3d t = T_w_c.translation();
             Quaterniond q = T_w_c.unit_quaternion();
             Mat3x3 R_ = q.toRotationMatrix();
-            // if it is kitti test (2D map), remove Z
             fd.open(output_file_path.c_str(),ios::app);
             fd << setprecision(6) << R_(0,0) << " " << R_(0,1) << " " << R_(0,2) << " " <<  t[0] << " ";
             fd << setprecision(6) << R_(1,0) << " " << R_(1,1) << " " << R_(1,2) << " " <<  t[1] << " ";
