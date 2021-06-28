@@ -77,7 +77,6 @@ Please wait for update.
 ### Fly in simulation:
 
 <img src="results/sopvo_sim.gif" width="600"> <br />
-<img src="results/rqt_graph.png" width="600"> <br />
 
 Please install our Gazebo simulation tool from: https://github.com/rduan036/E2ES.git
 
@@ -87,6 +86,7 @@ roslaunch sopvo sopvo_gazebo_sim.launch
 
 SOPVO + object tracking (https://github.com/arclab-hku/ICRA2021tracking): 
 ![example](results/vo_tracking_demo.gif)
+<img src="results/rqt_graph.png" width="600"> <br />
 
 ### Maintainer:
 
