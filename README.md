@@ -77,6 +77,7 @@ Please wait for update.
 ### Fly in simulation:
 
 <img src="results/sopvo_sim.gif" width="600"> <br />
+<img src="results/rqt_graph.png" width="600"> <br />
 
 Please install our Gazebo simulation tool from: https://github.com/rduan036/E2ES.git
 
