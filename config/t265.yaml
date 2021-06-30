@@ -41,7 +41,5 @@ T_cam1_cam0:
  0, 0, 0, 1]
 
 #reserved para for future functions
-para_1: 0
-para_2: 0
-para_3: 0
-para_4: 0
+frame_id: map
+run_rviz: true

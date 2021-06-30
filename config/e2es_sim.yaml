@@ -1,9 +1,9 @@
 #type_of_cam:
-#0---stereo kitti
-#1---stereo euroc
+#0---KITTI type (cam to body: T_body_cam0, T_body_cam1)
+#1---EuRoC type (cam to IMU: T_mavimu_cam0, T_mavimu_cam1, IMU to body: T_imu_mavimu)
 #2---T265
 type_of_cam: 0
-#depth image is aligned to left cam0
+#for RGB-D camera, depth image is aligned to left cam0
 image_width: 640
 image_height: 360
 
@@ -33,11 +33,7 @@ T_cam0_cam1:
   0.0,  0.0,  1.0,   0.0,
   0.0,  0.0,  0.0,   1.0]
 
-#reserved para for future functions
-para_1: 0
-para_2: 0
-para_3: 0
-para_4: 0
-
+frame_id: map
+run_rviz: true
 
 

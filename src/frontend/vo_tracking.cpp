@@ -20,7 +20,6 @@
 
 #include <include/yamlRead.h>
 #include <include/cv_draw.h>
-//#include <sopvo/KeyFrame.h>
 #include <include/octomap_feeder.h>
 #include <tf/transform_listener.h>
 #include <fstream>
@@ -46,23 +45,12 @@ private:
     message_filters::Synchronizer<MyApproSyncPolicy> * approSync_;
     ros::Subscriber senser_fusion_sub;
 
-    //Octomap
-    // OctomapFeeder* octomap_pub;
-
-    //Pub pose
-    ros::Publisher vision_pose_pub;
-
     //Pub rviz Visualization msg
     cv::Mat img0_vis;
-    cv::Mat img1_vis;
     image_transport::Publisher img0_pub;
-    // image_transport::Publisher img1_pub;
 
     RVIZFrame* frame_pub;
     RVIZPath*  vision_path_pub;
-    RVIZPath*  path_lc_pub;
-    tf::StampedTransform tranOdomMap;
-    tf::TransformListener listenerOdomMap;
 
     int frame_counter;
     bool enable_output_file;
@@ -72,29 +60,30 @@ private:
     virtual void onInit()
     {
         ros::NodeHandle& nh = getMTPrivateNodeHandle();
+        string configFilePath, voParamPath, frame_id;
+        nh.getParam("/yamlconfigfile",   configFilePath);
+        nh.getParam("/voparamfilepath", voParamPath);
+        try
+        {
+            nh.getParam("frame ID", frame_id);
+        }
+        catch(const std::exception& e)
+        {
+            frame_id = "map";
+        }
+        cout << "camera info path: " << configFilePath << endl;
+        cout << "sopvo params path: " << voParamPath << endl;
         //Publisher
-        vision_path_pub = new RVIZPath(nh,"/vision_path","map",1,3000);
-        path_lc_pub     = new RVIZPath(nh,"/vision_path_lc","map",1,3000);
-        frame_pub       = new RVIZFrame(nh,"/vo_camera_pose","map","/vo_curr_frame","map");
+        vision_path_pub = new RVIZPath(nh,"/vision_path",frame_id,1,5000);
+        frame_pub       = new RVIZFrame(nh,"/vo_camera_pose",frame_id,"/vo_curr_frame",frame_id);
         image_transport::ImageTransport it(nh);
         img0_pub = it.advertise("/vo_img0", 1);
-        // img1_pub = it.advertise("/vo_img1", 1);
 
         cam_tracker = new F2FTracking();
         //Load Parameter
-        string configFilePath, voParamPath;
-        nh.getParam("/yamlconfigfile",   configFilePath);
-        nh.getParam("/voparamfilepath", voParamPath);
-        cout << "camera info path: " << configFilePath << endl;
-        cout << "sopvo params path: " << voParamPath << endl;
         int cam_type_from_yaml = getIntVariableFromYaml(configFilePath,"type_of_cam");
         int image_width  = getIntVariableFromYaml(configFilePath,"image_width");
         int image_height = getIntVariableFromYaml(configFilePath,"image_height");
-        // not used, reserved for future functions
-        Vec4 parameter = Vec4(getDoubleVariableFromYaml(configFilePath,"para_1"),
-                              getDoubleVariableFromYaml(configFilePath,"para_2"),
-                              getDoubleVariableFromYaml(configFilePath,"para_3"),
-                              getDoubleVariableFromYaml(configFilePath,"para_4"));
 
         cout << "image_width :" << image_width << endl;
         cout << "image_height:" << image_height << endl;
@@ -126,7 +115,6 @@ private:
             cam_tracker->init(voParamPath,image_width,image_height,image_width,image_height,
                               cam0_cameraMatrix,cam0_distCoeffs,
                               T_w_c0,
-                              parameter,
                               STEREO_KITTI,
                               1.0,
                               cam1_cameraMatrix,cam1_distCoeffs,
@@ -155,7 +143,6 @@ private:
             cam_tracker->init(voParamPath,image_width,image_height,image_width,image_height,
                               cam0_cameraMatrix,cam0_distCoeffs,
                               T_i_c0,
-                              parameter,
                               STEREO_EuRoC_MAV,
                               1.0,
                               cam1_cameraMatrix,cam1_distCoeffs,
@@ -190,7 +177,6 @@ private:
             cam_tracker->init(voParamPath,image_width,image_height, image_width_out, image_height_out,
                               cam0_cameraMatrix,cam0_distCoeffs,
                               T_w_c0,
-                              parameter,
                               Realsense_T265,
                               1.0,
                               cam1_cameraMatrix,cam1_distCoeffs,
@@ -254,13 +240,9 @@ private:
         vision_path_pub->pubPathT_c_w(this->cam_tracker->curr_frame->T_c_w,tstamp);
 
         cvtColor(cam_tracker->curr_frame->img0,img0_vis,CV_GRAY2BGR);
-        // cvtColor(cam_tracker->curr_frame->img1,img1_vis,CV_GRAY2BGR);
         drawFrame(img0_vis,*this->cam_tracker->curr_frame,1,11);
-
         sensor_msgs::ImagePtr img0_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img0_vis).toImageMsg();
-        // sensor_msgs::ImagePtr img1_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img1_vis).toImageMsg();
         img0_pub.publish(img0_msg);
-        // img1_pub.publish(img1_msg);
         
         if(enable_output_file)
         {

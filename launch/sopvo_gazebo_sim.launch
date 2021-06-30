@@ -1,6 +1,7 @@
 <launch>
     <param name="/yamlconfigfile" type="string" value="$(find sopvo)/config/e2es_sim.yaml"/>
     <param name="/voparamfilepath" type="string" value="$(find sopvo)/config/vo_params_gazebo_sim.yaml"/>
+    <param name="/frame_id" type="string" value="map" />
     <param name="/output_file_path" type="string" value="0" />
     <arg name="node_start_delay" default="0.0" />
     <param name="/voc"             type="string" value="$(find sopvo)/voc/voc_orb.dbow3"/>

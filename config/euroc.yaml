@@ -39,10 +39,8 @@ T_mavimu_cam1:
   0.0, 0.0, 0.0, 1.0]
 
 #reserved para for future functions
-para_1: 0
-para_2: 0
-para_3: 0
-para_4: 0
+frame_id: map
+run_rviz: true
 
 #Original File:
 #General sensor definitions.

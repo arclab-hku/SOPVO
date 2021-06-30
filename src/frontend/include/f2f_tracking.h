@@ -58,7 +58,6 @@ public:
               const cv::Mat c0_cameraMatrix_in,
               const cv::Mat c0_distCoeffs_in,
               const SE3 T_i_c0_in,
-              const Vec4 vi_para=Vec4(0,0,0,0),
               const TYPEOFCAMERA cam_type_in=STEREO_EuRoC_MAV,
               const double cam_scale_in=1000.0,
               const cv::Mat c1_cameraMatrix_in = cv::Mat1d(3, 3),

@@ -8,7 +8,6 @@ using namespace cv;
 void F2FTracking::init(std::string configPath, const int w_in, const int h_in, const int w_out, const int h_out,
                        const Mat c0_cameraMatrix_in, const Mat c0_distCoeffs_in,
                        const SE3 T_i_c0_in,
-                       const Vec4 reserved_para,
                        const TYPEOFCAMERA cam_type_in,
                        const double cam_scale_in,
                        const Mat c1_cameraMatrix_in, const Mat c1_distCoeffs_in,
