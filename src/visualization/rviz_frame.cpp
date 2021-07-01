@@ -66,7 +66,7 @@ void RVIZFrame::pubFramePtsPoseT_w_c(const vector<Vec3>& pts3d,
 
   points.id = 0;
   line_list.id = 1;
-  camera_pyramid.id=2;
+  camera_pyramid.id = 2;
 
   points.type = visualization_msgs::Marker::POINTS;
   line_list.type = visualization_msgs::Marker::LINE_LIST;

@@ -78,10 +78,6 @@ find_package( PCL REQUIRED)
 include_directories( ${PCL_INCLUDE_DIRS} )
 add_definitions( ${PCL_DEFINITIONS} )
 
-FIND_PACKAGE(octomap REQUIRED )
-#FIND_PACKAGE(octovis REQUIRED )
-INCLUDE_DIRECTORIES(${OCTOMAP_INCLUDE_DIRS})
-
 find_package(catkin REQUIRED COMPONENTS
     nodelet
     roscpp
@@ -158,8 +154,6 @@ add_library(sopvo
     src/visualization/rviz_odom.cpp
     src/visualization/rviz_path.cpp
     src/visualization/rviz_pose.cpp
-
-    src/octofeeder/octomap_feeder.cpp
     )
 
 add_dependencies(sopvo ${catkin_EXPORTED_TARGETS})
@@ -176,7 +170,6 @@ target_link_libraries(sopvo
     ${DBoW3_LIBRARIES}
     ${G2O_LIBS}
     ${PCL_LIBRARIES}
-    ${OCTOMAP_LIBRARIES}
     ${Boost_SYSTEM_LIBRARY}
     
     )
