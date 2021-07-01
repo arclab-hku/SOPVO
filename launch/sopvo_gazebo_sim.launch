@@ -14,6 +14,6 @@
         launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
 	<remap from="/vo/image0"   to="/camera/infra1/image_raw"/>
         <remap from="/vo/image1"   to="/camera/infra2/image_raw"/>
-	<remap from="/vo_camera_pose"   to="/mavros/vision_pose/pose"/>
+	<remap from="/vo_body_pose"   to="/mavros/vision_pose/pose"/>
     </node>
 </launch>
