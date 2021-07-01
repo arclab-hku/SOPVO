@@ -57,6 +57,7 @@ private:
     std::ofstream fd;
     std::string output_file_path;
     std::string frame_id;
+    SE3 T_body_cam;
 
     virtual void onInit()
     {
@@ -106,6 +107,7 @@ private:
             Mat4x4  mat_body_cam0  = Mat44FromYaml(configFilePath,"T_body_cam0");
             SE3 T_b_c0 = SE3(mat_body_cam0.topLeftCorner(3,3),
                                 mat_body_cam0.topRightCorner(3,1));
+            T_body_cam = T_b_c0;
             cv::Mat cam1_cameraMatrix = cam0_cameraMatrix;
             cv::Mat cam1_distCoeffs   = cam0_distCoeffs;
             Mat4x4  mat_cam0_cam1 = Mat44FromYaml(configFilePath,"T_cam0_cam1");
@@ -133,6 +135,7 @@ private:
             Mat4x4  mat_mavimu_cam0  = Mat44FromYaml(configFilePath,"T_mavimu_cam0");
             SE3 T_mavi_c0 = SE3(mat_mavimu_cam0.topLeftCorner(3,3),
                                 mat_mavimu_cam0.topRightCorner(3,1));
+            T_body_cam = T_mavi_c0;
             cv::Mat cam1_cameraMatrix = cameraMatrixFromYamlIntrinsics(configFilePath,"cam1_intrinsics");
             cv::Mat cam1_distCoeffs   = distCoeffsFromYaml(configFilePath,"cam1_distortion_coeffs");
             Mat4x4  mat_mavimu_cam1  = Mat44FromYaml(configFilePath,"T_mavimu_cam1");
@@ -166,7 +169,7 @@ private:
             Mat4x4  mat_body_cam0  = Mat44FromYaml(configFilePath,"T_body_cam0");
             SE3 T_b_c0 = SE3(mat_body_cam0.topLeftCorner(3,3),
                                 mat_body_cam0.topRightCorner(3,1));
-            
+            T_body_cam = T_b_c0;
             Mat4x4  mat_cam1_cam0 = Mat44FromYaml(configFilePath,"T_cam1_cam0");
 
             SE3 T_c1_c0 = SE3(mat_cam1_cam0.topLeftCorner(3,3),mat_cam1_cam0.topRightCorner(3,1));
@@ -246,14 +249,16 @@ private:
         sensor_msgs::ImagePtr img0_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img0_vis).toImageMsg();
         img0_pub.publish(img0_msg);
 
-        SE3 T_w_c = this->cam_tracker->curr_frame->T_c_w.inverse();
+        SE3 T_c_w = this->cam_tracker->curr_frame->T_c_w;
+        SE3 T_body_world = T_body_cam*T_c_w;
+        SE3 T_world_body = T_body_world.inverse();
 
         geometry_msgs::PoseStamped poseStamped;
         poseStamped.header.frame_id = frame_id;
         poseStamped.header.stamp    = tstamp;
 
-        Quaterniond q = T_w_c.so3().unit_quaternion();
-        Vec3        t = T_w_c.translation();
+        Quaterniond q = T_world_body.so3().unit_quaternion();
+        Vec3        t = T_world_body.translation();
 
         poseStamped.pose.orientation.w = q.w();
         poseStamped.pose.orientation.x = q.x();
