@@ -50,16 +50,18 @@ private:
 
     RVIZFrame* frame_pub;
     RVIZPath*  vision_path_pub;
+    ros::Publisher vision_pose_pub;
 
     int frame_counter;
     bool enable_output_file;
     std::ofstream fd;
     std::string output_file_path;
+    std::string frame_id;
 
     virtual void onInit()
     {
         ros::NodeHandle& nh = getMTPrivateNodeHandle();
-        string configFilePath, voParamPath, frame_id;
+        string configFilePath, voParamPath;
         nh.getParam("/yamlconfigfile",   configFilePath);
         nh.getParam("/voparamfilepath", voParamPath);
         try
@@ -73,6 +75,7 @@ private:
         cout << "camera info path: " << configFilePath << endl;
         cout << "sopvo params path: " << voParamPath << endl;
         //Publisher
+        vision_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/vo_body_pose", 10);
         vision_path_pub = new RVIZPath(nh,"/vision_path",frame_id,1,5000);
         frame_pub       = new RVIZFrame(nh,"/vo_camera_pose",frame_id,"/vo_curr_frame",frame_id);
         image_transport::ImageTransport it(nh);
@@ -242,13 +245,28 @@ private:
         drawFrame(img0_vis,*this->cam_tracker->curr_frame,1,11);
         sensor_msgs::ImagePtr img0_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img0_vis).toImageMsg();
         img0_pub.publish(img0_msg);
+
+        SE3 T_w_c = this->cam_tracker->curr_frame->T_c_w.inverse();
+
+        geometry_msgs::PoseStamped poseStamped;
+        poseStamped.header.frame_id = frame_id;
+        poseStamped.header.stamp    = tstamp;
+
+        Quaterniond q = T_w_c.so3().unit_quaternion();
+        Vec3        t = T_w_c.translation();
+
+        poseStamped.pose.orientation.w = q.w();
+        poseStamped.pose.orientation.x = q.x();
+        poseStamped.pose.orientation.y = q.y();
+        poseStamped.pose.orientation.z = q.z();
+        poseStamped.pose.position.x = t[0];
+        poseStamped.pose.position.y = t[1];
+        poseStamped.pose.position.z = t[2];
+
+        vision_pose_pub.publish(poseStamped);
         
         if(enable_output_file)
         {
-            frame_counter ++;
-            SE3 T_w_c = this->cam_tracker->curr_frame->T_c_w.inverse();
-            Vector3d t = T_w_c.translation();
-            Quaterniond q = T_w_c.unit_quaternion();
             Mat3x3 R_ = q.toRotationMatrix();
             fd.open(output_file_path.c_str(),ios::app);
             fd << setprecision(6) << R_(0,0) << " " << R_(0,1) << " " << R_(0,2) << " " <<  t[0] << " ";
@@ -257,6 +275,8 @@ private:
             // fd << setprecision(6) << t[0] << " " << t[1] << " " << t[2] << " " << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << std::endl;
             fd.close();
         }
+
+        frame_counter ++;
     }//image_input_callback(const sensor_msgs::ImageConstPtr & imgPtr, const sensor_msgs::ImageConstPtr & depthImgPtr)
 };//class TrackingNodeletClass
 }//namespace sopvo_ns
