@@ -20,7 +20,6 @@
 
 #include <include/yamlRead.h>
 #include <include/cv_draw.h>
-#include <include/octomap_feeder.h>
 #include <tf/transform_listener.h>
 #include <fstream>
 
