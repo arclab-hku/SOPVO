@@ -88,7 +88,7 @@ SOPVO + object tracking (https://github.com/arclab-hku/ICRA2021tracking):
 ![example](results/vo_tracking_demo.gif)
 <img src="results/rqt_graph.png" width="600"> <br />
 
-## To fly a UAV, please download our onboard version: https://github.com/rduan036/SOPVO.git
+## To fly a UAV, please check our onboard version: https://github.com/rduan036/SOPVO.git
 UAV platform: lattepanda + D435i
 <img src="results/rviz.png" width="1000"> <br />
 <img src="results/sopvo_onboard.gif" width="600"> <br />
