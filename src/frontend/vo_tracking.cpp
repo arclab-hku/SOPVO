@@ -221,8 +221,10 @@ private:
         t[1] = msg->pose.position.y;
         t[2] = msg->pose.position.z;
         // cout << "fusion pose: " << t << endl;
-        SE3 T_w_c_fusion = SE3(q.toRotationMatrix(), t);
-        this->cam_tracker->T_c_w_last_frame = T_w_c_fusion.inverse();
+        SE3 T_w_b_fusion = SE3(q.toRotationMatrix(), t);
+        SE3 T_w_c = T_w_b_fusion * T_body_cam;
+        this->cam_tracker->T_c_w_last_frame =  T_w_c.inverse();
+        this->cam_tracker->last_frame->T_c_w = T_w_c.inverse();
     }
     
     void image_input_callback(const sensor_msgs::ImageConstPtr & img0_Ptr,

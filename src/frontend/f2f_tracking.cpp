@@ -164,12 +164,6 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     this->frameCount = 0;
     this->vo_tracking_state = Init_sopvo;
     this->has_localmap_feedback = false;
-    // initial pose
-    // Mat3x3 R_w_c;
-    // 0  0  1
-    //-1  0  0
-    // 0 -1  0
-    // R_w_c << 0, 0, 1, -1, 0, 0, 0,-1, 0;
     T_c_w_last_keyframe = T_init.inverse();
     T_c_w_last_frame = T_c_w_last_keyframe;
     myOrientationPri->init(T_c1_c0, K1, sos_alpha, sos_beta, sop_max_iter);

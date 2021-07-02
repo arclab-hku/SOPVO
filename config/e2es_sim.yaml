@@ -7,6 +7,7 @@ type_of_cam: 0
 image_width: 640
 image_height: 360
 
+# init pose of trajectory
 T_init:
 [0, 0, 1, 0,
  -1, 0, 0, 0,
@@ -18,12 +19,6 @@ T_world_body:
   0.0,  1.0,  0.0,  0.0,
   0.0,  0.0,  1.0,  0.0,
   0.0,  0.0,  0.0,  1.0]
-
-#T_world_body:
-#[0, 0, 1, 0,
-# -1, 0, 0, 0,
-# 0, -1, 0, 0,
-# 0, 0, 0, 1]
 
 cam0_intrinsics: [343.4963684082031, 343.4963684082031, 320, 180] #fx fy cx cy
 cam0_distortion_coeffs: [0.0, 0.0, 0.0, 0.0] #k1 k2 r1 r2
