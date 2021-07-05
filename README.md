@@ -11,6 +11,8 @@ Paper Link: TBD
 
 Project link: TBD
 
+Title: Stereo Orientation Prior for UAV Robust and Accurate Visual Odometry
+
 Abstruct:
 This paper presents a novel outlier rejection approach for feature-based visual odometry. The proposed approach is based on an empirical observation that shows that some 2D-3D correspondences with very low reprojection error can cause a high error in pose estimation. This work exploits such observations for odometry when a stereo camera is available. We argue that an explicit pose error measure is desired over that of implicit reprojection -- whenever the former is possible -- to classify correspondences into inliers vs. outliers for robust long-term odometry. To explicitly measure the plausible pose error, we derive bounds on the individual pose parameters with the help of the known orientation of stereo cameras. In this process, we formulate our bounds using the sum-of-square polynomials, which allow us to test whether a given correspondence satisfies any solution within the expected bounds. If the correspondence does not satisfy bounds for any parameter, it is considered to be an outlier. We implemented and tested the proposed method for UAV indoor navigation. The experiments from both benchmark and UAV onboard tests indicate that the inlier group refined by the proposed method significantly improves odometry estimation compared to the traditional outlier rejection methods. In fact, the proposed method performs as accurately as IMU-aided methods in the state of the art.
 
@@ -90,8 +92,9 @@ SOPVO + object tracking (https://github.com/arclab-hku/ICRA2021tracking):
 
 ## To fly a UAV, please check our onboard version: https://github.com/rduan036/SOPVO.git
 UAV platform: lattepanda + D435i
+
 <img src="results/rviz.png" width="1000"> <br />
-<img src="results/sopvo_onboard.gif" width="600"> <br />
+<img src="results/sopvo_test.gif" width="600"> <br />
 
 ### Maintainer:
 
