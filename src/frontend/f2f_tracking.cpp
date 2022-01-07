@@ -175,6 +175,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     T_c_w_last_frame = T_c_w_last_keyframe;
     // init stereo orientation prior
     myOrientationPri->init(T_c1_c0, K1, sos_alpha, sos_beta, sop_max_iter);
+    fusion_pose_update = false;
 }
 // init keyframe
 bool F2FTracking::init_frame()
@@ -312,6 +313,38 @@ bool F2FTracking::reset_keyframe()
     return init_succeed;
 }
 
+void F2FTracking::landmark_updating()
+{
+    vector<Vec3> pts3d_c_cam_measure;
+    vector<bool> cam_measure_mask;
+    vector<Vec2> pts2d_img0, pts2d_img1;
+    curr_frame->recover3DPts_c_FromStereo(pts3d_c_cam_measure, pts2d_img0, pts2d_img1, cam_measure_mask);
+    for(size_t i=0; i<curr_frame->landmarks.size(); i++)
+    {
+        if (cam_measure_mask.at(i)==false) continue;
+        Vec3 lm_c_measure = pts3d_c_cam_measure.at(i);
+        if(curr_frame->landmarks.at(i).hasDepthInf())
+        {
+            //transfor to Camera frame
+            Vec3 lm_c_update = StereoCamera::world2cameraT_c_w(curr_frame->landmarks.at(i).lm_3d_w,curr_frame->T_c_w);
+            curr_frame->landmarks.at(i).lm_3d_c = lm_c_update;
+            curr_frame->landmarks.at(i).lm_3d_w = StereoCamera::camera2worldT_c_w(lm_c_update, curr_frame->T_c_w);
+            curr_frame->landmarks.at(i).lmState = LMSTATE_NORMAL;
+            curr_frame->landmarks.at(i).lm_tracking_state = LM_TRACKING_INLIER;
+        }
+        else//Do not have position
+        {
+            Vec3 pt3d_w = StereoCamera::camera2worldT_c_w(lm_c_measure,curr_frame->T_c_w);
+            curr_frame->landmarks.at(i).lm_3d_c = lm_c_measure;
+            curr_frame->landmarks.at(i).lm_3d_w = pt3d_w;
+            curr_frame->landmarks.at(i).lmState = LMSTATE_NORMAL;
+            curr_frame->landmarks.at(i).lm_has_3d = true;
+            curr_frame->landmarks.at(i).lm_tracking_state = LM_TRACKING_INLIER;
+        }
+    }
+
+}
+
 // pnp from last frame (no matter keyframe or non-keyframe)
 bool F2FTracking::pnp_from_lastframe()
 {
@@ -375,6 +408,13 @@ void F2FTracking::image_feed(const double time,
     // reset flags
     new_keyframe = false;
     reset_cmd = false;
+    curr_frame->T_c_w = T_c_w_last_frame;
+    // fusion pose feedback
+    if(fusion_pose_update)
+    {
+        this->landmark_updating();
+        fusion_pose_update = false;
+    }
     // update data
     frameCount++;
     last_frame.swap(curr_frame);
@@ -382,7 +422,8 @@ void F2FTracking::image_feed(const double time,
     curr_frame->frame_id = frameCount;
     curr_frame->frame_time = time;
     // curr_frame pose <- last_frame pose
-    curr_frame->T_c_w = T_c_w_last_frame;
+    
+    
     // get raw images and remap to undistorted image
     switch(this->cam_type) 
     {

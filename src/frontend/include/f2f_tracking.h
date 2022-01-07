@@ -42,6 +42,8 @@ public:
 
     SE3 T_c_w_last_keyframe;
     SE3 T_c_w_last_frame;
+    SE3 T_c_w_fusion_feedback;
+    bool fusion_pose_update;
     deque<ID_POSE> pose_records;
     CameraFrame::Ptr curr_frame,last_frame,last_keyframe;
     OrientationPri::Ptr myOrientationPri;
@@ -85,6 +87,7 @@ private:
     double point_difference_threshold;
     bool init_frame(void);
     bool reset_keyframe(void);
+    void landmark_updating(void);
     bool pnp_from_lastframe(void);
 };//class F2FTracking
 
