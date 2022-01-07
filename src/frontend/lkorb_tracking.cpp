@@ -32,6 +32,11 @@ bool LKORBTracking::tracking(CameraFrame& from,
     cv::calcOpticalFlowPyrLK(from_img, to_img, from_cvP2f, tracked_cvP2f,
                              mask_tracked, err, cv::Size(21,21), 6, criteria);
 
+    // //estimate F matrix check
+    // vector<unsigned char> mask_F_consistant;
+    // cv::findFundamentalMat(from_cvP2f, tracked_cvP2f,
+    //                     cv::FM_RANSAC, 5.0, 0.99, mask_F_consistant);
+
     // cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
 
     vector<cv::KeyPoint>     tracked_lm_cvKP;
@@ -44,10 +49,8 @@ bool LKORBTracking::tracking(CameraFrame& from,
     bool reuslt = false;
     for(int i=from.landmarks.size()-1; i>=0; i--)
     {
-        if(mask_tracked.at(i)!=1)
-        {//outliers
-            outlier.push_back(from.landmarks.at(i).lm_2d);
-        }else
+        // if(mask_tracked.at(i) ==1 && mask_F_consistant.at(i) == 1)
+        if(mask_tracked.at(i) ==1)
         {//inliers
             lm2d_from.push_back(from.landmarks.at(i).lm_2d);
             lm2d_to.push_back(Vec2(tracked_cvP2f.at(i).x,tracked_cvP2f.at(i).y));
@@ -55,6 +58,11 @@ bool LKORBTracking::tracking(CameraFrame& from,
             lm.lm_2d=Vec2(tracked_cvP2f.at(i).x,tracked_cvP2f.at(i).y);
             to.landmarks.push_back(lm);
         }
+        else
+        {//outliers
+            outlier.push_back(from.landmarks.at(i).lm_2d);
+        }
+        
     }
     if(lm2d_to.size()>=20 && outlier.size()>lm2d_to.size())
     {

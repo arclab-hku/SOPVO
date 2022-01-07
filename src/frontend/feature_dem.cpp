@@ -175,13 +175,13 @@ void FeatureDEM::fb_tracking(const cv::Mat& img0, const cv::Mat& img1, std::vect
     std::vector<cv::Point2f> pts1_add;
 
     grided_detect(img0, pts0);
-    // featureDetectionGoodFeaturesToTrack(img0, pts0, 100);
+    // featureDetectionGoodFeaturesToTrack(img0, pts0, 200);
     grided_detect(img1, pts1_add);
-    // featureDetectionGoodFeaturesToTrack(img1, pts1_add, 100);
-    // forward
+    // featureDetectionGoodFeaturesToTrack(img1, pts1_add, 200);
+    // forward tracking
     featureTracking(img0, img1, pts0, pts1);
     // cout << " forward tracking finished, keep " << pts0.size() << " keypoints for this keyframe" << endl;
-    // backward
+    // backward tracking
     featureTracking(img1, img0, pts1_add, pts0_add);
     // cout << " backward tracking finished, keep " << pts0_add.size() << " keypoints for this keyframe" << endl;
     // combine keypoints and remove the duplicates

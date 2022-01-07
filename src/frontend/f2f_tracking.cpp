@@ -1,3 +1,8 @@
+// This script contain the frame to frame keypoint detection/tracking/trignaulation and pose estimation processes
+// Duan Ran
+// AAE, PolyU, HK, China
+// rduan036@gmail.com
+
 #include "include/f2f_tracking.h"
 #include <chrono>
 #include <ros/ros.h>
@@ -14,6 +19,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
                        const SE3 T_c0_c1,
                        const SE3 T_init)
 {
+    // Loading the para file (which defined in launch file)
     cv::FileStorage fsSettings(configPath, cv::FileStorage::READ);
     if(!fsSettings.isOpened())
     {
@@ -22,7 +28,6 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
         {
             ros::Duration(1).sleep();
             ROS_ERROR_STREAM("Wrong path for VO parameters input...");
-            // std::cout << "ERROR: Wrong path to settings, use default parameters..." << std::endl;
         }
     }
     else
@@ -67,26 +72,27 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
         nFeatures = fsSettings["feature.nFeatures"];
     }
     fsSettings.release();
-    
+    // initialize feature detection
     this->feature_dem   = new FeatureDEM(w_out,h_out,grid_w,grid_h,nFeatures,boundarySize);
     this->lkorb_tracker = new LKORBTracking(w_out,h_out);
-
+    // initialize frames:
     curr_frame = std::make_shared<CameraFrame>();
     last_frame = std::make_shared<CameraFrame>();
     last_keyframe = std::make_shared<CameraFrame>();
+    // initialize orientation prior
     myOrientationPri = std::make_shared<OrientationPri>();
+    // set frame (W, H)
     curr_frame->height = last_frame->height = last_keyframe->height = h_out;
     curr_frame->width = last_frame->width = last_keyframe->width = w_out;
-
+    // initialize T(R,t) between stereo cameras
     SE3 T_c1_c0 = T_c0_c1.inverse();
-
+    // set camera type (EUROC, KITTI, T265, or you define others)
     this->cam_type = cam_type_in;
-    
+    // load stereo cameras' para 
     K0 = c0_cameraMatrix_in;
     D0 = c0_distCoeffs_in;
     K1 = c1_cameraMatrix_in;
     D1 = c1_distCoeffs_in;
-    
     Mat3x3 R_ = T_c1_c0.rotation_matrix();
     Vec3   T_ = T_c1_c0.translation();
     cv::Mat R__ = (cv::Mat1d(3, 3) << R_(0,0), R_(0,1), R_(0,2),
@@ -98,7 +104,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
                         R0,R1,P0,P1,Q,
                         CALIB_ZERO_DISPARITY,0,cv::Size(w_out,h_out));
 
-    
+    // input image raw -> rectified image
     switch(this->cam_type)
     {
         case STEREO_KITTI:
@@ -116,8 +122,10 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
             D1_rect = D0_rect = (cv::Mat1d(4, 1) << 0,0,0,0);
             break;
         case Realsense_T265:
+            // we first rectify the image raw output from rs_t265.launch 
             cv::fisheye::initUndistortRectifyMap(K0, D0, R0, P0, cv::Size(w_out,h_out), CV_32FC1, c0_RM[0], c0_RM[1]);
             cv::fisheye::initUndistortRectifyMap(K1, D1, R1, P1, cv::Size(w_out,h_out), CV_32FC1, c1_RM[0], c1_RM[1]);
+            // then resize the image and redo the rectification
             K0_rect = (cv::Mat_<double>(3,3) << 169.519821, 0.000000, 151.870868, 0.000000, 167.917718, 132.600913, 0.000000, 0.000000, 1.000000);
             D0_rect = (cv::Mat1d(4, 1) << -0.003884, 0.007336, -0.002283, -0.001952);
             K1_rect = (cv::Mat_<double>(3,3) << 169.392025, 0.000000, 150.805310, 0.000000, 167.969904, 137.542866, 0.000000, 0.000000, 1.000000);
@@ -136,7 +144,7 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
         //     D1_rect = D0_rect = (cv::Mat1d(4, 1) << 0,0,0,0);
         //     break;
     }
-    
+    // initialize stereo camera model
     StereoCamera dc;
     Mat3x4 P0_,P1_;
     P0_(0,0) = P0.at<double>(0,0);
@@ -147,7 +155,6 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     P0_(0,3) = P0.at<double>(0,3);
     P0_(1,3) = P0.at<double>(1,3);
     P0_(2,3) = P0.at<double>(2,3);
-
     P1_(0,0) = P1.at<double>(0,0);
     P1_(1,1) = P1.at<double>(1,1);
     P1_(0,2) = P1.at<double>(0,2);
@@ -156,7 +163,6 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     P1_(0,3) = P1.at<double>(0,3);
     P1_(1,3) = P1.at<double>(1,3);
     P1_(2,3) = P1.at<double>(2,3);
-
     dc.setSteroCamInfo(K0_rect, D0_rect, P0_,
                             K1_rect, D1_rect, P1_,
                             T_c0_c1);
@@ -164,33 +170,28 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
     this->frameCount = 0;
     this->vo_tracking_state = Init_sopvo;
     this->has_localmap_feedback = false;
+    // init T world to camera
     T_c_w_last_keyframe = T_init.inverse();
     T_c_w_last_frame = T_c_w_last_keyframe;
+    // init stereo orientation prior
     myOrientationPri->init(T_c1_c0, K1, sos_alpha, sos_beta, sop_max_iter);
 }
-
+// init keyframe
 bool F2FTracking::init_frame()
 {
     bool init_succeed=false;
     curr_frame->T_c_w = T_c_w_last_frame;
+    // keypoint detection using orb
     vector<Vec2> pts2d_img0, pts2d_img1;
     std::vector<cv::Point2f> pts0, pts1;
-    // vector<cv::Mat>  descriptors;
     this->feature_dem->fb_tracking(curr_frame->img0, curr_frame->img1, pts0, pts1);
-    // extract orb descriptors
     vector<cv::KeyPoint> tmpKPs;
-    // cv::Mat tmpDescriptors;
     cv::KeyPoint::convert(pts0,tmpKPs);
     cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
-    // extractor->compute(curr_frame->img0, tmpKPs, tmpDescriptors); // this function removes some keypoints without telling their index, which is not good... 
-    // cout << " forward-backward tracking finished, keep " << tmpKPs.size() << " keypoints for this keyframe" << endl;
-    // descriptors.clear();
-    // descriptors_to_vMat(tmpDescriptors, descriptors);
     pts2d_img0 = vcvP2f_2_vVec2(pts0);
     pts2d_img1 = vcvP2f_2_vVec2(pts1);
-
+    // keypoint trignaulation
     int p3d_counter = 0;
-
     for(size_t i=0; i<tmpKPs.size(); i++)
     {
         cv::Point2f point_check = cv::Point2f(tmpKPs.at(i).pt.x, tmpKPs.at(i).pt.y);
@@ -218,8 +219,8 @@ bool F2FTracking::init_frame()
         }
     }
     cout << "frame " << frameCount;
-    cout << ": point could initialized, " << p3d_counter << " points have been generated. " << endl;
-
+    cout << ": point cloud initialized, " << p3d_counter << " points have been generated. " << endl;
+    // if no enough 3D landmarks generated during the keyframe, enable new keypoint detection for once in non-keyframe 
     if (p3d_counter < 2*MINIMUM_KEYPOINTS)
     {
         add_new_keypoints_once = true;
@@ -228,7 +229,7 @@ bool F2FTracking::init_frame()
     {
         add_new_keypoints_once = false;
     }
-
+    // if achieved the minimum condition, switch from keyframe to non-keyframe
     if(curr_frame->validLMCount() > MINIMUM_KEYPOINTS)
     {
         ID_POSE tmp;
@@ -242,28 +243,22 @@ bool F2FTracking::init_frame()
     return init_succeed;
 }
 
+// reset keyframe from last frame, because currect frame is lost
 bool F2FTracking::reset_keyframe()
 {
+    // reset last frame
     bool init_succeed=false;
     last_frame->landmarks.clear();
+    // detect keypoint from last frame
     vector<Vec2> pts2d_img0, pts2d_img1;
     std::vector<cv::Point2f> pts0, pts1;
-    // vector<cv::Mat>  descriptors;
     this->feature_dem->fb_tracking(last_frame->img0, last_frame->img1, pts0, pts1);
-    // extract orb descriptors
     vector<cv::KeyPoint> tmpKPs;
-    // cv::Mat tmpDescriptors;
     cv::KeyPoint::convert(pts0,tmpKPs);
     cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
-    // extractor->compute(last_frame->img0, tmpKPs, tmpDescriptors); // this function removes some keypoints without telling their index, which is not good... 
-    // cout << " forward-backward tracking finished, keep " << tmpKPs.size() << " keypoints for this keyframe" << endl;
-    // descriptors.clear();
-    // descriptors_to_vMat(tmpDescriptors, descriptors);
     pts2d_img0 = vcvP2f_2_vVec2(pts0);
     pts2d_img1 = vcvP2f_2_vVec2(pts1);
-
     int p3d_counter = 0;
-
     for(size_t i=0; i<tmpKPs.size(); i++)
     {
         cv::Point2f point_check = cv::Point2f(tmpKPs.at(i).pt.x, tmpKPs.at(i).pt.y);
@@ -301,7 +296,7 @@ bool F2FTracking::reset_keyframe()
     }
 
     cout << "frame " << frameCount;
-    cout << ": point could initialized, " << p3d_counter << " points have been generated. " << endl;
+    cout << ": point cloud initialized, " << p3d_counter << " points have been generated. " << endl;
 
     ID_POSE tmp;
     tmp.frame_id = last_frame->frame_id;
@@ -317,11 +312,12 @@ bool F2FTracking::reset_keyframe()
     return init_succeed;
 }
 
+// pnp from last frame (no matter keyframe or non-keyframe)
 bool F2FTracking::pnp_from_lastframe()
 {
     bool need_reset = false;
-    vector<cv::Point2f> p2d;
-    vector<cv::Point3f> p3d;
+    vector<cv::Point2f> p2d, p2d_pre; // in image
+    vector<cv::Point3f> p3d, p3d_pre; // in world
     curr_frame->getValid2d3dPair_cvPf(p2d,p3d);
     if(p2d.size() < MINIMUM_KEYPOINTS)
     {
@@ -334,14 +330,14 @@ bool F2FTracking::pnp_from_lastframe()
         cv::Mat t_ = cv::Mat::zeros(3, 1, CV_64FC1);
         cv::Mat r_old = cv::Mat::zeros(3, 1, CV_64FC1);
         cv::Mat t_old = cv::Mat::zeros(3, 1, CV_64FC1);
-        SE3_to_rvec_tvec(last_frame->T_c_w, r_ , t_ ); 
-        SE3_to_rvec_tvec(last_frame->T_c_w, r_old , t_old );
+        SE3_to_rvec_tvec(T_c_w_last_frame, r_ , t_ ); 
+        // SE3_to_rvec_tvec(last_frame->T_c_w, r_old , t_old );
         cv::Mat inliers;
         solvePnPRansac(p3d,p2d,K0_rect,D0_rect,
                     r_,t_,false,100,3.0,0.99,inliers,cv::SOLVEPNP_ITERATIVE);
         curr_frame->T_c_w = SE3_from_rvec_tvec(r_,t_); 
         // abnormal motion detection
-        SE3 T_diff_key_curr = last_frame->T_c_w*(curr_frame->T_c_w.inverse());
+        SE3 T_diff_key_curr = T_c_w_last_frame*(curr_frame->T_c_w.inverse());
         Vec3 t=T_diff_key_curr.translation();
         Vec3 r=T_diff_key_curr.so3().log();
         double t_norm = fabs(t[0]) + fabs(t[1]) + fabs(t[2]);
@@ -355,7 +351,9 @@ bool F2FTracking::pnp_from_lastframe()
         {
             std::vector<uchar> status;
             for (int i = 0; i < (int)p2d.size(); i++)
+            {
                 status.push_back(0);
+            }
             for( int i = 0; i < inliers.rows; i++)
             {
                 int n = inliers.at<int>(i);
@@ -366,7 +364,7 @@ bool F2FTracking::pnp_from_lastframe()
     }
     return need_reset;
 }
-
+// main workflow of frame to frame tracking
 void F2FTracking::image_feed(const double time,
                              const cv::Mat img0_in,
                              const cv::Mat img1_in,
@@ -374,15 +372,18 @@ void F2FTracking::image_feed(const double time,
                              bool &reset_cmd)
 {
     auto start = high_resolution_clock::now();
+    // reset flags
     new_keyframe = false;
     reset_cmd = false;
+    // update data
     frameCount++;
-    // cout << "frame : " << frameCount << endl;
     last_frame.swap(curr_frame);
     curr_frame->clear();
     curr_frame->frame_id = frameCount;
     curr_frame->frame_time = time;
+    // curr_frame pose <- last_frame pose
     curr_frame->T_c_w = T_c_w_last_frame;
+    // get raw images and remap to undistorted image
     switch(this->cam_type) 
     {
         case STEREO_KITTI:
@@ -404,14 +405,14 @@ void F2FTracking::image_feed(const double time,
             cv::remap(img1_in, curr_frame->img1, c1_RM[0], c1_RM[1], cv::INTER_LINEAR);
             break;
     }
-
+    // state machine
     switch(vo_tracking_state)
     {
         case Init_sopvo:
         {
             if(this->init_frame())
             {
-                // new_keyframe = true;
+                // init_frame() success 
                 vo_tracking_state = Run_sopvo;
                 cout << "keyframe initialization success..." << endl;
             }
@@ -426,21 +427,25 @@ void F2FTracking::image_feed(const double time,
                 STEP3: Update keyframe and record pose
                         */
             //STEP1:
+            // keypoint tracking
             vector<Vec2> lm2d_from,lm2d_to,outlier_tracking;
             this->lkorb_tracker->tracking(*last_frame,
                                         *curr_frame,
                                         lm2d_from,
                                         lm2d_to,
                                         outlier_tracking);
+            // pnp from last frame
             bool need_reset_keyframe = this->pnp_from_lastframe();
             if(need_reset_keyframe)
             {
-                // reset_cmd = true;
+                // if pnp failed
+                cout << "pnp failed, reset keyframe..." << endl;
                 if (this->reset_keyframe())
                 {
-                    lm2d_from.clear();
-                    lm2d_to.clear();
-                    outlier_tracking.clear();
+                    vector<Vec2> lm2d_from_discard,lm2d_to_discard,outlier_tracking_discard;
+                    lm2d_from.swap(lm2d_from_discard);
+                    lm2d_to.swap(lm2d_to_discard);
+                    outlier_tracking.swap(outlier_tracking_discard);
                     curr_frame->landmarks.clear(); 
                     this->lkorb_tracker->tracking(*last_frame,
                                                 *curr_frame,
@@ -521,7 +526,6 @@ void F2FTracking::image_feed(const double time,
                         {
                             if (dist_3d.norm() < point_difference_threshold)
                             {
-                                // lm_c_update = 0.9*lm_c + 0.1*lm_c_measure;
                                 lm_c_update = (1 - point_learning_rate)*lm_c + point_learning_rate*lm_c_measure;
                             }
                             else
@@ -577,9 +581,11 @@ void F2FTracking::image_feed(const double time,
                 // reset_cmd = true;
                 if (this->reset_keyframe())
                 {
-                    lm2d_from.clear();
-                    lm2d_to.clear();
-                    outlier_tracking.clear();
+                    cout << "reset keyframe..." << endl;
+                    vector<Vec2> lm2d_from_discard,lm2d_to_discard,outlier_tracking_discard;
+                    lm2d_from.swap(lm2d_from_discard);
+                    lm2d_to.swap(lm2d_to_discard);
+                    outlier_tracking.swap(outlier_tracking_discard);
                     curr_frame->landmarks.clear(); 
                     this->lkorb_tracker->tracking(*last_frame,
                                                 *curr_frame,
@@ -606,9 +612,10 @@ void F2FTracking::image_feed(const double time,
                 cout << "insufficient landmarks, reset keyframe..." << endl;
                 // reset_cmd = true;
                 this->reset_keyframe();
-                lm2d_from.clear();
-                lm2d_to.clear();
-                outlier_tracking.clear();
+                vector<Vec2> lm2d_from_discard,lm2d_to_discard,outlier_tracking_discard;
+                lm2d_from.swap(lm2d_from_discard);
+                lm2d_to.swap(lm2d_to_discard);
+                outlier_tracking.swap(outlier_tracking_discard);
                 curr_frame->landmarks.clear(); 
                 this->lkorb_tracker->tracking(*last_frame,
                                             *curr_frame,
@@ -657,9 +664,10 @@ void F2FTracking::image_feed(const double time,
                 cout << "reset keyframe..." << endl;
                 // reset_cmd = true;
                 this->reset_keyframe();
-                lm2d_from.clear();
-                lm2d_to.clear();
-                outlier_tracking.clear();
+                vector<Vec2> lm2d_from_discard,lm2d_to_discard,outlier_tracking_discard;
+                lm2d_from.swap(lm2d_from_discard);
+                lm2d_to.swap(lm2d_to_discard);
+                outlier_tracking.swap(outlier_tracking_discard);
                 curr_frame->landmarks.clear(); 
                 this->lkorb_tracker->tracking(*last_frame,
                                             *curr_frame,
