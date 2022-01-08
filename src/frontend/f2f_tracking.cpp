@@ -367,7 +367,7 @@ bool F2FTracking::pnp_from_lastframe()
         // SE3_to_rvec_tvec(last_frame->T_c_w, r_old , t_old );
         cv::Mat inliers;
         solvePnPRansac(p3d,p2d,K0_rect,D0_rect,
-                    r_,t_,false,100,3.0,0.99,inliers,cv::SOLVEPNP_ITERATIVE);
+                    r_,t_,true,100,1.0,0.99,inliers,cv::SOLVEPNP_ITERATIVE);
         curr_frame->T_c_w = SE3_from_rvec_tvec(r_,t_); 
         // abnormal motion detection
         SE3 T_diff_key_curr = T_c_w_last_frame*(curr_frame->T_c_w.inverse());

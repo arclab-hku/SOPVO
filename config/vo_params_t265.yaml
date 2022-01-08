@@ -19,7 +19,7 @@ feature.gridW: 4 # default 2
 feature.gridH: 4 # default 2
 feature.boundaryBoxSize: 5 # default 5
 # ORB Extractor: Number of features per image patch
-feature.nFeatures: 5 # default 50
+feature.nFeatures: 10 # default 50
 #--------------------------------------------------------------------------------------------
 # Orientation Prior Parameters
 #--------------------------------------------------------------------------------------------
