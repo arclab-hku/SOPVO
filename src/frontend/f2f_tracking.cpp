@@ -125,13 +125,13 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
             // we first rectify the image raw output from rs_t265.launch 
             cv::fisheye::initUndistortRectifyMap(K0, D0, R0, P0, cv::Size(w_out,h_out), CV_32FC1, c0_RM[0], c0_RM[1]);
             cv::fisheye::initUndistortRectifyMap(K1, D1, R1, P1, cv::Size(w_out,h_out), CV_32FC1, c1_RM[0], c1_RM[1]);
-            // then resize the image and redo the rectification
-            K0_rect = (cv::Mat_<double>(3,3) << 169.519821, 0.000000, 151.870868, 0.000000, 167.917718, 132.600913, 0.000000, 0.000000, 1.000000);
-            D0_rect = (cv::Mat1d(4, 1) << -0.003884, 0.007336, -0.002283, -0.001952);
-            K1_rect = (cv::Mat_<double>(3,3) << 169.392025, 0.000000, 150.805310, 0.000000, 167.969904, 137.542866, 0.000000, 0.000000, 1.000000);
-            D1_rect = (cv::Mat1d(4, 1) << 0.000446, 0.006281, 0.007351, -0.004575);
-            cv::initUndistortRectifyMap(K0_rect, D0_rect, R0, P0, cv::Size(w_out,h_out), CV_32FC1, c0_RM_rect[0], c0_RM_rect[1]);
-            cv::initUndistortRectifyMap(K1_rect, D1_rect, R1, P1, cv::Size(w_out,h_out), CV_32FC1, c1_RM_rect[0], c1_RM_rect[1]);
+            // // then resize the image and redo the rectification
+            // K0_rect = (cv::Mat_<double>(3,3) << 169.519821, 0.000000, 151.870868, 0.000000, 167.917718, 132.600913, 0.000000, 0.000000, 1.000000);
+            // D0_rect = (cv::Mat1d(4, 1) << -0.003884, 0.007336, -0.002283, -0.001952);
+            // K1_rect = (cv::Mat_<double>(3,3) << 169.392025, 0.000000, 150.805310, 0.000000, 167.969904, 137.542866, 0.000000, 0.000000, 1.000000);
+            // D1_rect = (cv::Mat1d(4, 1) << 0.000446, 0.006281, 0.007351, -0.004575);
+            // cv::initUndistortRectifyMap(K0_rect, D0_rect, R0, P0, cv::Size(w_out,h_out), CV_32FC1, c0_RM_rect[0], c0_RM_rect[1]);
+            // cv::initUndistortRectifyMap(K1_rect, D1_rect, R1, P1, cv::Size(w_out,h_out), CV_32FC1, c1_RM_rect[0], c1_RM_rect[1]);
             K0_rect = P0.rowRange(0,3).colRange(0,3);
             K1_rect = P1.rowRange(0,3).colRange(0,3);
             D1_rect = D0_rect = (cv::Mat1d(4, 1) << 0,0,0,0);
@@ -438,8 +438,8 @@ void F2FTracking::image_feed(const double time,
         case Realsense_T265:
             cv::remap(img0_in, curr_frame->img0, c0_RM[0], c0_RM[1], cv::INTER_LINEAR);
             cv::remap(img1_in, curr_frame->img1, c1_RM[0], c1_RM[1], cv::INTER_LINEAR);
-            cv::remap(curr_frame->img0, curr_frame->img0, c0_RM_rect[0], c0_RM_rect[1], cv::INTER_LINEAR);
-            cv::remap(curr_frame->img1, curr_frame->img1, c1_RM_rect[0], c1_RM_rect[1], cv::INTER_LINEAR);
+            // cv::remap(curr_frame->img0, curr_frame->img0, c0_RM_rect[0], c0_RM_rect[1], cv::INTER_LINEAR);
+            // cv::remap(curr_frame->img1, curr_frame->img1, c1_RM_rect[0], c1_RM_rect[1], cv::INTER_LINEAR);
             break;
         default:
             cv::remap(img0_in, curr_frame->img0, c0_RM[0], c0_RM[1], cv::INTER_LINEAR);
