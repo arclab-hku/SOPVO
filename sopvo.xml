@@ -7,17 +7,4 @@
 		</description>
 	</class>
 
-        <class name="sopvo/LocalMapNodeletClass" type="sopvo_ns::LocalMapNodeletClass"
-		base_class_type="nodelet::Nodelet">
-		<description>
-                        LocalMapNodeletClass.
-		</description>
-	</class>
-
-        <class name="sopvo/LoopClosingNodeletClass" type="sopvo_ns::LoopClosingNodeletClass"
-                base_class_type="nodelet::Nodelet">
-                <description>
-                        LoopClosingNodeletClass.
-                </description>
-        </class>
 </library>
