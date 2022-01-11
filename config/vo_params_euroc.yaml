@@ -2,29 +2,27 @@
 #--------------------------------------------------------------------------------------------
 # VO System Parameters
 #--------------------------------------------------------------------------------------------
-sopvo.minimumKeypoint: 25 # default 20
-sopvo.maximumKeyframeShift: 1 # maximum distance between two keyframe, default 1 
-sopvo.backendEnable: 0 # loop closure, default 0 (disable), currently not available
-sopvo.BAenable: 0 # bundle adjustment, default 0 (disable), currently not available
-sopvo.addNewKeypoint: 1 # add new keypoints in each new frame (this will slowdown the process)
-sopvo.reprojectionErrorPessimistic: 2 # inliers
-sopvo.reprojectionErrorOptimistic: 5 # outliers will be rejected by orientation prior
-sopvo.depthLearningRate: 0.1 # default 0.25
-sopvo.depthDifferenceThreshold: 0.1 # default 0.01
+system.sopEnableFlag: true # 1: enable, 0: disable
+system.enableLoopclosure: false # loop closure, default 0 (disable), currently not available
+system.addNewKeypoint: true # add new keypoints in each new frame (this will slowdown the process)
 #--------------------------------------------------------------------------------------------
 # Feature detection Parameters
 #--------------------------------------------------------------------------------------------
 # grided detection
-feature.gridW: 7 # default 2
-feature.gridH: 4 # default 2
-feature.boundaryBoxSize: 5 # default 5
-# ORB Extractor: Number of features per image patch
-feature.nFeatures: 5 # default 50
+feature.minimumKeypoint: 25 # minimum keypoints
+feature.maximumKeyframeShift: 1 # maximum distance between two keyframe
+feature.gridW: 7 # detection grids
+feature.gridH: 4 # detection grids
+feature.boundaryBoxSize: 5 # minimum distance between feature points
+feature.nFeatures: 5 # Number of features per image patch, default 50
 #--------------------------------------------------------------------------------------------
 # Orientation Prior Parameters
 #--------------------------------------------------------------------------------------------
-sopvo.sosEnableFlag: 1 # default 1 (enable)
-sopvo.sosAlphaForR: 0.01 # default 0.0001
-sopvo.sosBetaForT: 0.5 # default 0.5
-sopvo.maxIter: 100
+sopvo.sosAlphaForR: 0.01 # alpha
+sopvo.sosBetaForT: 0.5 # beta
+sopvo.reprojectionErrorPessimistic: 2 # inliers
+sopvo.reprojectionErrorOptimistic: 5 # outliers will be rejected by orientation prior
+sopvo.pointLearningRate: 0.1 # point learning rate
+sopvo.pointDifferenceThreshold: 0.1 # valid distance for point learning
+sopvo.maxIter: 100 # max iter of sdp
 

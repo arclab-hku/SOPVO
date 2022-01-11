@@ -1,3 +1,8 @@
+// This is the main script for vo system running
+// Author: Duan Ran
+// AAE, PolyU, HK, China
+// rduan036@gmail.com
+
 #include <pluginlib/class_list_macros.h>
 #include <nodelet/nodelet.h>
 #include <ros/ros.h>
@@ -32,7 +37,6 @@ public:
     TrackingNodeletClass()  {;}
     ~TrackingNodeletClass() {;}
 private:
-
     enum TYPEOFCAMERA cam_type;
     F2FTracking   *cam_tracker;
     //Subscribers
@@ -75,7 +79,8 @@ private:
         }
         cout << "camera info path: " << configFilePath << endl;
         cout << "sopvo params path: " << voParamPath << endl;
-        //Publisher
+
+        //Publishers
         vision_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/vo_body_pose", 10);
         vision_path_pub = new RVIZPath(nh,"/vision_path",frame_id,1,5000);
         frame_pub       = new RVIZFrame(nh,"/vo_camera_pose",frame_id,"/vo_curr_frame",frame_id);
@@ -83,7 +88,8 @@ private:
         img0_pub = it.advertise("/vo_img0", 1);
 
         cam_tracker = new F2FTracking();
-        //Load Parameter
+
+        //Load Camera Parameters
         int cam_type_from_yaml = getIntVariableFromYaml(configFilePath,"type_of_cam");
         int image_width  = getIntVariableFromYaml(configFilePath,"image_width");
         int image_height = getIntVariableFromYaml(configFilePath,"image_height");
@@ -99,6 +105,45 @@ private:
         if(cam_type_from_yaml==2) cam_type = Realsense_T265;
         Mat4x4  initPose = Mat44FromYaml(configFilePath,"T_init");
         SE3 T_init = SE3(initPose.topLeftCorner(3,3),initPose.topRightCorner(3,1));
+
+        //Load feature detection parameters
+        int feat_minimumKeypoint = getIntVariableFromYaml(voParamPath,"feature.minimumKeypoint");
+        int feat_maximumKeyframeShift = getIntVariableFromYaml(voParamPath,"feature.maximumKeyframeShift");
+        int feat_gridW = getIntVariableFromYaml(voParamPath,"feature.gridW");
+        int feat_gridH = getIntVariableFromYaml(voParamPath,"feature.gridH");
+        int feat_numFeatures = getIntVariableFromYaml(voParamPath,"feature.nFeatures");
+        int feat_boundaryBoxSize = getIntVariableFromYaml(voParamPath,"feature.boundaryBoxSize");
+        cam_tracker->load_feature_para(feat_minimumKeypoint,
+                                        feat_maximumKeyframeShift,
+                                        feat_gridW,
+                                        feat_gridH,
+                                        feat_numFeatures,
+                                        feat_boundaryBoxSize);
+
+        //Load system parameters
+        bool sys_sosEnableFlag = getBoolVariableFromYaml(voParamPath,"system.sopEnableFlag");
+        bool sys_add_new_keypoints = getBoolVariableFromYaml(voParamPath,"system.addNewKeypoint");
+        bool sys_enableLoopclosure = getBoolVariableFromYaml(voParamPath,"system.enableLoopclosure");
+        cam_tracker->load_system_para(sys_sosEnableFlag,
+                                        sys_add_new_keypoints,
+                                        sys_enableLoopclosure);
+
+        //Load sopvo parameters
+        double sopvo_alpha = getDoubleVariableFromYaml(voParamPath,"sopvo.sosAlphaForR");
+        double sopvo_beta = getDoubleVariableFromYaml(voParamPath,"sopvo.sosBetaForT");
+        double sopvo_reprojectionErrorPessimistic = getDoubleVariableFromYaml(voParamPath,"sopvo.reprojectionErrorPessimistic");
+        double sopvo_reprojectionErrorOptimistic = getDoubleVariableFromYaml(voParamPath,"sopvo.reprojectionErrorOptimistic");
+        double sopvo_pointLearningRate = getDoubleVariableFromYaml(voParamPath,"sopvo.pointLearningRate");
+        double sopvo_pointDifferenceThreshold = getDoubleVariableFromYaml(voParamPath,"sopvo.pointDifferenceThreshold");
+        int sopvo_max_iter = getIntVariableFromYaml(voParamPath,"sopvo.maxIter");
+        cam_tracker->load_sopvo_para(sopvo_alpha,
+                                        sopvo_beta,
+                                        sopvo_reprojectionErrorPessimistic,
+                                        sopvo_reprojectionErrorOptimistic,
+                                        sopvo_pointLearningRate,
+                                        sopvo_pointDifferenceThreshold,
+                                        sopvo_max_iter);
+        cout << "All parameters have loaded..." << endl;
 
         if(cam_type==STEREO_KITTI)
         {
@@ -116,7 +161,7 @@ private:
             Mat4x4  mat_w_b  = Mat44FromYaml(configFilePath,"T_world_body");
             SE3 T_w_b = SE3(mat_w_b.topLeftCorner(3,3),mat_w_b.topRightCorner(3,1));
             SE3 T_w_c0 = T_w_b*T_b_c0;
-            cam_tracker->init(voParamPath,image_width,image_height,image_width,image_height,
+            cam_tracker->init(image_width,image_height,image_width,image_height,
                               cam0_cameraMatrix,cam0_distCoeffs,
                               T_w_c0,
                               STEREO_KITTI,
@@ -145,7 +190,7 @@ private:
             Mat4x4  mat_i_mavimu  = Mat44FromYaml(configFilePath,"T_imu_mavimu");
             SE3 T_i_mavi = SE3(mat_i_mavimu.topLeftCorner(3,3),mat_i_mavimu.topRightCorner(3,1));
             SE3 T_i_c0 = T_i_mavi*T_mavi_c0;
-            cam_tracker->init(voParamPath,image_width,image_height,image_width,image_height,
+            cam_tracker->init(image_width,image_height,image_width,image_height,
                               cam0_cameraMatrix,cam0_distCoeffs,
                               T_i_c0,
                               STEREO_EuRoC_MAV,
@@ -179,7 +224,7 @@ private:
             Mat4x4  mat_w_b  = Mat44FromYaml(configFilePath,"T_world_body");
             SE3 T_w_b = SE3(mat_w_b.topLeftCorner(3,3),mat_w_b.topRightCorner(3,1));
             SE3 T_w_c0 = T_w_b*T_b_c0;
-            cam_tracker->init(voParamPath,image_width,image_height, image_width_out, image_height_out,
+            cam_tracker->init(image_width,image_height, image_width_out, image_height_out,
                               cam0_cameraMatrix,cam0_distCoeffs,
                               T_w_c0,
                               Realsense_T265,

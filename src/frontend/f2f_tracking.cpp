@@ -1,5 +1,5 @@
 // This script contain the frame to frame keypoint detection/tracking/trignaulation and pose estimation processes
-// Duan Ran
+// Author: Duan Ran
 // AAE, PolyU, HK, China
 // rduan036@gmail.com
 
@@ -10,7 +10,7 @@
 using namespace std::chrono;
 using namespace cv;
 
-void F2FTracking::init(std::string configPath, const int w_in, const int h_in, const int w_out, const int h_out,
+void F2FTracking::init(const int w_in, const int h_in, const int w_out, const int h_out,
                        const Mat c0_cameraMatrix_in, const Mat c0_distCoeffs_in,
                        const SE3 T_i_c0_in,
                        const TYPEOFCAMERA cam_type_in,
@@ -19,59 +19,6 @@ void F2FTracking::init(std::string configPath, const int w_in, const int h_in, c
                        const SE3 T_c0_c1,
                        const SE3 T_init)
 {
-    // Loading the para file (which defined in launch file)
-    cv::FileStorage fsSettings(configPath, cv::FileStorage::READ);
-    if(!fsSettings.isOpened())
-    {
-        fsSettings.release();
-        while(true)
-        {
-            ros::Duration(1).sleep();
-            ROS_ERROR_STREAM("Wrong path for VO parameters input...");
-        }
-    }
-    else
-    {
-        MINIMUM_KEYPOINTS = fsSettings["sopvo.minimumKeypoint"];
-        MAXIMUM_T_ERROR = fsSettings["sopvo.maximumKeyframeShift"];
-        sosEnableFlag = true;
-        int temp_value = fsSettings["sopvo.sosEnableFlag"];
-        if (temp_value == 0)
-        {
-            sosEnableFlag = false;
-        }
-        sos_alpha = fsSettings["sopvo.sosAlphaForR"];
-        sos_beta = fsSettings["sopvo.sosBetaForT"];
-        sop_max_iter = fsSettings["sopvo.maxIter"];
-        reprojectionErrorPessimistic = fsSettings["sopvo.reprojectionErrorPessimistic"];
-        reprojectionErrorOptimistic = fsSettings["sopvo.reprojectionErrorOptimistic"];
-        point_learning_rate = fsSettings["sopvo.pointLearningRate"];
-        point_difference_threshold = fsSettings["sopvo.pointDifferenceThreshold"];
-        backendEnableFlag = false;
-        temp_value = fsSettings["sopvo.backendEnable"];
-        if (temp_value != 0)
-        {
-            backendEnableFlag = true;
-        }
-        BAenableFlag = false;
-        temp_value = fsSettings["sopvo.BAenable"];
-        if (temp_value != 0)
-        {
-            backendEnableFlag = true;
-        }
-        add_new_keypoints = false;
-        temp_value = fsSettings["sopvo.addNewKeypoint"];
-        if (temp_value != 0)
-        {
-            add_new_keypoints = true;
-        }
-        add_new_keypoints_once = false;
-        grid_w = fsSettings["feature.gridW"];
-        grid_h = fsSettings["feature.gridH"];
-        boundarySize = fsSettings["feature.boundaryBoxSize"];
-        nFeatures = fsSettings["feature.nFeatures"];
-    }
-    fsSettings.release();
     // initialize feature detection
     this->feature_dem   = new FeatureDEM(w_out,h_out,grid_w,grid_h,nFeatures,boundarySize);
     this->lkorb_tracker = new LKORBTracking(w_out,h_out);
@@ -508,16 +455,9 @@ void F2FTracking::image_feed(const double time,
                 }
             }
             //STEP2:
-            if(BAenableFlag)
+            if(enableLoopclosure)
             {
-                try
-                {
-                    OptimizeInFrame::optimize(*curr_frame); // BA process, currently not available
-                }
-                catch(const std::exception& e)
-                {
-                    cout << "BA failed..." << endl;
-                }
+                enableLoopclosure = false; // currently not available
             }
             
             try

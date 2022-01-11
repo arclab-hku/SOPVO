@@ -31,10 +31,10 @@ public:
 
     //varialbe
     cv::Mat K0,D0,K1,D1;
-    cv::Mat K0_rect;//cam0 rectified cameraMatrix;
-    cv::Mat D0_rect;//cam0 rectified distCoeffs;
-    cv::Mat K1_rect;//cam1 rectified cameraMatrix;
-    cv::Mat D1_rect;//cam1 rectified distCoeffs;
+    cv::Mat K0_rect; //cam0 rectified cameraMatrix;
+    cv::Mat D0_rect; //cam0 rectified distCoeffs;
+    cv::Mat K1_rect; //cam1 rectified cameraMatrix;
+    cv::Mat D1_rect; //cam1 rectified distCoeffs;
     cv::Mat c0_RM[2];
     cv::Mat c1_RM[2];
     cv::Mat c0_RM_rect[2];
@@ -47,7 +47,6 @@ public:
     deque<ID_POSE> pose_records;
     CameraFrame::Ptr curr_frame,last_frame,last_keyframe;
     OrientationPri::Ptr myOrientationPri;
-    int sop_max_iter;
 
     void image_feed(const double time,
                     const cv::Mat img0_in,
@@ -55,8 +54,7 @@ public:
                     bool &new_keyframe,
                     bool &reset_cmd);
 
-    void init(std::string configPath,
-              const int w_in, const int h_in, const int w_out, const int h_out,
+    void init(const int w_in, const int h_in, const int w_out, const int h_out,
               const cv::Mat c0_cameraMatrix_in,
               const cv::Mat c0_distCoeffs_in,
               const SE3 T_i_c0_in,
@@ -67,24 +65,69 @@ public:
               const SE3 T_c0_c1=SE3(),
               const SE3 T_init=SE3());
 
+    void load_feature_para( int feat_minimumKeypoint,
+                            int feat_maximumKeyframeShift,
+                            int feat_gridW,
+                            int feat_gridH,
+                            int feat_numFeatures,
+                            int feat_boundaryBoxSize)
+                            {
+                                MINIMUM_KEYPOINTS = feat_minimumKeypoint;
+                                MAXIMUM_T_ERROR = feat_maximumKeyframeShift;
+                                grid_w = feat_gridW;
+                                grid_h = feat_gridH;
+                                nFeatures = feat_numFeatures;
+                                boundarySize = feat_boundaryBoxSize;
+                            }
+
+    void load_system_para(  bool sys_sosEnableFlag,
+                            bool sys_add_new_keypoints,
+                            bool sys_enableLoopclosure)
+                            {
+                                sosEnableFlag = sys_sosEnableFlag;
+                                add_new_keypoints = sys_add_new_keypoints;
+                                enableLoopclosure = sys_enableLoopclosure;
+                            }
+
+    void load_sopvo_para(   double sopvo_alpha,
+                            double sopvo_beta,
+                            double sopvo_reprojectionErrorPessimistic,
+                            double sopvo_reprojectionErrorOptimistic,
+                            double sopvo_pointLearningRate,
+                            double sopvo_pointDifferenceThreshold,
+                            int sopvo_max_iter)
+                            {
+                                sos_alpha = sopvo_alpha;
+                                sos_beta = sopvo_beta;
+                                reprojectionErrorPessimistic = sopvo_reprojectionErrorPessimistic;
+                                reprojectionErrorOptimistic = sopvo_reprojectionErrorOptimistic;
+                                point_learning_rate = sopvo_pointLearningRate;
+                                point_difference_threshold = sopvo_pointDifferenceThreshold;
+                                sop_max_iter = sopvo_max_iter;
+                            }
+
 private:
+    // featurte detection para
     int MINIMUM_KEYPOINTS;
     int MAXIMUM_T_ERROR;
     int grid_w;
     int grid_h;
     int nFeatures;
     int boundarySize;
-    bool backendEnableFlag;
-    bool BAenableFlag;
+    // system para
     bool sosEnableFlag;
     bool add_new_keypoints;
     bool add_new_keypoints_once;
+    bool enableLoopclosure;
+    // sopvo para
     double sos_alpha;
     double sos_beta;
     double reprojectionErrorPessimistic;
     double reprojectionErrorOptimistic;
     double point_learning_rate;
     double point_difference_threshold;
+    int sop_max_iter;
+
     bool init_frame(void);
     bool reset_keyframe(void);
     void landmark_updating(void);
