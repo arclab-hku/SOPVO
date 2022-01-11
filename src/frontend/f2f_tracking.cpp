@@ -135,7 +135,7 @@ bool F2FTracking::init_frame()
     this->feature_dem->fb_tracking(curr_frame->img0, curr_frame->img1, pts0, pts1);
     vector<cv::KeyPoint> tmpKPs;
     cv::KeyPoint::convert(pts0,tmpKPs);
-    cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
+    // cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
     pts2d_img0 = vcvP2f_2_vVec2(pts0);
     pts2d_img1 = vcvP2f_2_vVec2(pts1);
     // keypoint trignaulation
@@ -203,7 +203,7 @@ bool F2FTracking::reset_keyframe()
     this->feature_dem->fb_tracking(last_frame->img0, last_frame->img1, pts0, pts1);
     vector<cv::KeyPoint> tmpKPs;
     cv::KeyPoint::convert(pts0,tmpKPs);
-    cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
+    // cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create();
     pts2d_img0 = vcvP2f_2_vVec2(pts0);
     pts2d_img1 = vcvP2f_2_vVec2(pts1);
     int p3d_counter = 0;
