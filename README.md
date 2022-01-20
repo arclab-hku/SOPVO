@@ -61,6 +61,11 @@ Make sure you have installed realsense-ros properly. To run the live demo:
 ````
 roslaunch sopvo sopvo_t265_live.launch
 ````
+We provide a rosbag recorded by T265: https://drive.google.com/file/d/120WtpXt8S25mX8qVsPO7OakMC8dvOlU9/view?usp=sharing
+````
+roslaunch sopvo sopvo_t265.launch
+````
+<img src="results/sopvo_t265.gif" width="600"> <br />
 
 5.3 KITTI:
 Please download the odometry dataset(gray image), then use kitti_img2rosbag_tool to convert the sequense into rosbag.
@@ -73,8 +78,7 @@ http://www.cvlibs.net/datasets/kitti/eval_odometry_detail.php?&result=8ec81d01a1
 
 [![](http://img.youtube.com/vi/0eGTsfJpJl4/0.jpg)](http://www.youtube.com/watch?v=0eGTsfJpJl4 "")
 
-5.4 Other datasets:
-Please wait for update.
+
 
 ### Fly in simulation:
 
