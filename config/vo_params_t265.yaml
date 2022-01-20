@@ -21,7 +21,7 @@ feature.nFeatures: 20 # Number of features per image patch, default 50
 sopvo.sosAlphaForR: 0.01 # alpha
 sopvo.sosBetaForT: 0.5 # beta
 sopvo.reprojectionErrorPessimistic: 2 # inliers
-sopvo.reprojectionErrorOptimistic: 3 # outliers will be rejected by orientation prior
+sopvo.reprojectionErrorOptimistic: 4 # outliers will be rejected by orientation prior
 sopvo.pointLearningRate: 0.1 # point learning rate
 sopvo.pointDifferenceThreshold: 0.1 # valid distance for point learning
 sopvo.maxIter: 100 # max iter of sdp
