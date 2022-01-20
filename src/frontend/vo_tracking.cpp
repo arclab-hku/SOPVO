@@ -71,7 +71,7 @@ private:
         nh.getParam("/voparamfilepath", voParamPath);
         try
         {
-            nh.getParam("frame ID", frame_id);
+            nh.getParam("/frameID", frame_id);
         }
         catch(const std::exception& e)
         {
@@ -79,6 +79,7 @@ private:
         }
         cout << "camera info path: " << configFilePath << endl;
         cout << "sopvo params path: " << voParamPath << endl;
+        cout << "frame ID: " << frame_id << endl;
 
         //Publishers
         vision_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/vo_body_pose", 10);

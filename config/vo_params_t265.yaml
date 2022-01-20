@@ -4,7 +4,7 @@
 #--------------------------------------------------------------------------------------------
 system.sopEnableFlag: true # 1: enable, 0: disable
 system.enableLoopclosure: false # loop closure, default 0 (disable), currently not available
-system.addNewKeypoint: true # add new keypoints in each new frame (this will slowdown the process)
+system.addNewKeypoint: false # add new keypoints in each new frame (this will slowdown the process)
 #--------------------------------------------------------------------------------------------
 # Feature detection Parameters
 #--------------------------------------------------------------------------------------------
@@ -14,14 +14,14 @@ feature.maximumKeyframeShift: 1 # maximum distance between two keyframe
 feature.gridW: 4 # detection grids
 feature.gridH: 4 # detection grids
 feature.boundaryBoxSize: 5 # minimum distance between feature points
-feature.nFeatures: 10 # Number of features per image patch, default 50
+feature.nFeatures: 20 # Number of features per image patch, default 50
 #--------------------------------------------------------------------------------------------
 # Orientation Prior Parameters
 #--------------------------------------------------------------------------------------------
 sopvo.sosAlphaForR: 0.01 # alpha
 sopvo.sosBetaForT: 0.5 # beta
 sopvo.reprojectionErrorPessimistic: 2 # inliers
-sopvo.reprojectionErrorOptimistic: 5 # outliers will be rejected by orientation prior
+sopvo.reprojectionErrorOptimistic: 3 # outliers will be rejected by orientation prior
 sopvo.pointLearningRate: 0.1 # point learning rate
 sopvo.pointDifferenceThreshold: 0.1 # valid distance for point learning
 sopvo.maxIter: 100 # max iter of sdp

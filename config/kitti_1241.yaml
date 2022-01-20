@@ -42,7 +42,6 @@ T_cam0_cam1:
 0, 0, 0, 1]
 
 #reserved para for future functions
-frame_id: map
 run_rviz: true
 
 # Original File of Seq 00 - 02:

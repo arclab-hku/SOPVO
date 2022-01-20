@@ -4,6 +4,7 @@
     <param name="/yamlconfigfile" type="string" value="$(find sopvo)/config/t265.yaml"/>
     <param name="/voparamfilepath" type="string" value="$(find sopvo)/config/vo_params_t265.yaml"/>
     <!--<param name="/output_file_path" type="string" value="$(find sopvo)/results/t265.txt" />-->
+    <param name="frame ID" type="string" value="camera_odom_frame"/>
     <include file="$(find realsense2_camera)/launch/rs_t265.launch" />
     <arg name="node_start_delay" default="0.0" />
     <param name="/voc"             type="string" value="$(find sopvo)/voc/voc_orb.dbow3"/>

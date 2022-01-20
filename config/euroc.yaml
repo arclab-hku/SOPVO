@@ -39,7 +39,6 @@ T_mavimu_cam1:
   0.0, 0.0, 0.0, 1.0]
 
 #reserved para for future functions
-frame_id: map
 run_rviz: true
 
 #Original File:
