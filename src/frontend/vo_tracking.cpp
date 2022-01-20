@@ -109,7 +109,7 @@ private:
 
         //Load feature detection parameters
         int feat_minimumKeypoint = getIntVariableFromYaml(voParamPath,"feature.minimumKeypoint");
-        int feat_maximumKeyframeShift = getIntVariableFromYaml(voParamPath,"feature.maximumKeyframeShift");
+        double feat_maximumKeyframeShift = getDoubleVariableFromYaml(voParamPath,"feature.maximumKeyframeShift");
         int feat_gridW = getIntVariableFromYaml(voParamPath,"feature.gridW");
         int feat_gridH = getIntVariableFromYaml(voParamPath,"feature.gridH");
         int feat_numFeatures = getIntVariableFromYaml(voParamPath,"feature.nFeatures");

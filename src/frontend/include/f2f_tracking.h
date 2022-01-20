@@ -66,7 +66,7 @@ public:
               const SE3 T_init=SE3());
 
     void load_feature_para( int feat_minimumKeypoint,
-                            int feat_maximumKeyframeShift,
+                            double feat_maximumKeyframeShift,
                             int feat_gridW,
                             int feat_gridH,
                             int feat_numFeatures,
@@ -109,7 +109,7 @@ public:
 private:
     // featurte detection para
     int MINIMUM_KEYPOINTS;
-    int MAXIMUM_T_ERROR;
+    double MAXIMUM_T_ERROR;
     int grid_w;
     int grid_h;
     int nFeatures;
