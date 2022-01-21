@@ -4,7 +4,7 @@
 #--------------------------------------------------------------------------------------------
 system.sopEnableFlag: true # 1: enable, 0: disable
 system.enableLoopclosure: false # loop closure, default 0 (disable), currently not available
-system.addNewKeypoint: false # add new keypoints in each new frame (this will slowdown the process)
+system.addNewKeypoint: true # add new keypoints in each new frame (this will slowdown the process)
 #--------------------------------------------------------------------------------------------
 # Feature detection Parameters
 #--------------------------------------------------------------------------------------------
