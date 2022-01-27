@@ -63,7 +63,6 @@ We provide a rosbag recorded by T265: https://drive.google.com/file/d/120WtpXt8S
 ````
 roslaunch sopvo sopvo_t265.launch
 ````
-<img src="results/sopvo_t265.gif" width="600"> <br />
 
 5.3 KITTI:
 Please download the odometry dataset(gray image), then use kitti_img2rosbag_tool to convert the sequense into rosbag.

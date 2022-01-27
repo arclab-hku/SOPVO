@@ -5,7 +5,7 @@
     <param name="/voparamfilepath" type="string" value="$(find sopvo)/config/vo_params_t265.yaml"/>
     <param name="/frameID" type="string" value="camera_odom_frame"/>
     <!--<param name="/output_file_path" type="string" value="$(find sopvo)/results/t265.txt" />-->
-    <node pkg="rosbag" type="play" name="rosbag" args="$(find sopvo)/bag/6.bag"/>
+    <node pkg="rosbag" type="play" name="rosbag" args="$(find sopvo)/bag/7.bag"/>
     <arg name="node_start_delay" default="0.0" />
     <param name="/voc"             type="string" value="$(find sopvo)/voc/voc_orb.dbow3"/>
     <!-- Manager -->
