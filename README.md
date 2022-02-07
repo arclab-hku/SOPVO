@@ -7,7 +7,7 @@
 
 ### 2-Relevent Publication:
 
-Paper Link: TBD
+Paper Link: https://ieeexplore.ieee.org/document/9690581
 
 Title: Stereo Orientation Prior for UAV Robust and Accurate Visual Odometry
 
@@ -105,3 +105,19 @@ rduan036@gmail.com
 
 ### Acknowledgement:
 I would like to thank Dr. Shengyang Chen(Dept.ME,PolyU) for his assistant in coding.  
+
+### Cite:
+
+R. Duan, D. P. Paudel, C. Fu and P. Lu, "Stereo Orientation Prior for UAV Robust and Accurate Visual Odometry," in IEEE/ASME Transactions on Mechatronics, doi: 10.1109/TMECH.2022.3140923.
+
+Latex:
+
+@ARTICLE{9690581,
+  author={Duan, Ran and Paudel, Danda Pani and Fu, Changhong and Lu, Peng},
+  journal={IEEE/ASME Transactions on Mechatronics}, 
+  title={Stereo Orientation Prior for UAV Robust and Accurate Visual Odometry}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={1-11},
+  doi={10.1109/TMECH.2022.3140923}}
