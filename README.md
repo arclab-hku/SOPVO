@@ -109,7 +109,7 @@ Latex:
   journal={IEEE/ASME Transactions on Mechatronics}, 
   title={Stereo Orientation Prior for UAV Robust and Accurate Visual Odometry}, 
   year={2022},
-  volume={},
-  number={},
-  pages={1-11},
+  volume={27},
+  number={5},
+  pages={3440-3450},
   doi={10.1109/TMECH.2022.3140923}}
